@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>円山ホテル 事業計画 前提条件説明書</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d2e;
+  --card-border: rgba(255,255,255,0.06);
+  --text: #e0e4ef;
+  --dim: #6b7394;
+  --accent: #ffbe0b;
+  --accent2: #4ecdc4;
+  --accent3: #ff6b8a;
+  --accent4: #a855f7;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans JP','Inter',sans-serif; line-height:1.8; }
+.container { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+.header { text-align:center; margin-bottom:48px; padding-bottom:32px; border-bottom:1px solid var(--card-border); }
+.header-badge { display:inline-block; background:rgba(255,190,11,0.15); color:var(--accent); padding:4px 16px; border-radius:20px; font-size:.72rem; font-weight:600; letter-spacing:.1em; margin-bottom:16px; }
+.header h1 { font-size:1.8rem; font-weight:700; margin-bottom:8px; }
+.header p { color:var(--dim); font-size:.85rem; }
+.toc { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:24px 28px; margin-bottom:40px; }
+.toc h3 { font-size:.85rem; color:var(--accent); margin-bottom:12px; letter-spacing:.05em; }
+.toc ol { padding-left:20px; }
+.toc li { margin-bottom:6px; }
+.toc a { color:var(--accent2); text-decoration:none; font-size:.85rem; }
+.toc a:hover { text-decoration:underline; }
+.section { margin-bottom:40px; }
+.section-num { display:inline-block; background:var(--accent); color:#0f1117; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-weight:700; font-size:.8rem; margin-right:10px; }
+.section h2 { font-size:1.2rem; font-weight:700; margin-bottom:20px; display:flex; align-items:center; }
+.card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:24px; margin-bottom:16px; }
+.card-title { font-size:.9rem; font-weight:600; color:var(--accent2); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.card-title .icon { font-size:1.1rem; }
+table { width:100%; border-collapse:collapse; font-size:.82rem; }
+table th { text-align:left; color:var(--dim); font-weight:500; padding:8px 12px; border-bottom:1px solid var(--card-border); font-size:.75rem; letter-spacing:.03em; }
+table td { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.03); }
+table td:last-child { text-align:right; }
+table th:last-child { text-align:right; }
+.val { font-weight:600; color:var(--accent2); }
+.source { color:var(--dim); font-size:.72rem; font-style:italic; }
+.note { background:rgba(255,190,11,0.08); border-left:3px solid var(--accent); padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; font-size:.82rem; line-height:1.7; }
+.note strong { color:var(--accent); }
+.formula { background:rgba(78,205,196,0.08); border:1px solid rgba(78,205,196,0.2); border-radius:8px; padding:16px 20px; margin:12px 0; font-family:'Inter',monospace; font-size:.8rem; color:var(--accent2); line-height:1.9; }
+.formula .label { color:var(--dim); font-size:.72rem; display:block; margin-bottom:4px; }
+.bar-chart { display:flex; gap:2px; height:24px; border-radius:4px; overflow:hidden; margin:8px 0; }
+.bar-segment { display:flex; align-items:center; justify-content:center; font-size:.6rem; font-weight:600; color:#fff; min-width:20px; }
+.legend { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:8px; }
+.legend-item { display:flex; align-items:center; gap:4px; font-size:.7rem; color:var(--dim); }
+.legend-dot { width:8px; height:8px; border-radius:2px; }
+.highlight { color:var(--accent3); font-weight:600; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:640px) { .grid-2{grid-template-columns:1fr} }
+.waterfall { display:flex; align-items:flex-end; gap:4px; height:160px; margin:16px 0; }
+.wf-bar { display:flex; flex-direction:column; align-items:center; flex:1; }
+.wf-block { border-radius:3px; width:100%; display:flex; align-items:center; justify-content:center; font-size:.55rem; font-weight:600; color:#fff; }
+.wf-label { font-size:.58rem; color:var(--dim); margin-top:4px; text-align:center; line-height:1.2; }
+.print-note { text-align:center; color:var(--dim); font-size:.75rem; margin-top:48px; padding-top:24px; border-top:1px solid var(--card-border); }
+.tag { display:inline-block; background:rgba(168,85,247,0.15); color:var(--accent4); padding:2px 8px; border-radius:4px; font-size:.7rem; font-weight:600; margin-left:6px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <div class="header-badge">CONFIDENTIAL — クライアント説明用</div>
+  <h1>円山ホテル 事業計画<br>前提条件・根拠説明書</h1>
+  <p>本資料はボリュームスタディ ダッシュボードにおけるPL（損益計算書）・<br>事業計画の数字の根拠を項目ごとに説明するものです</p>
+  <p style="margin-top:12px;font-size:.75rem;">AHA 浜田晶則建築設計事務所 ｜ 2026年3月</p>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h3>📋 目次</h3>
+  <ol>
+    <li><a href="#s1">建設コスト（坪単価・設備費・解体費）</a></li>
+    <li><a href="#s2">総事業費の構成</a></li>
+    <li><a href="#s3">収入モデル（宿泊・F&B・その他）</a></li>
+    <li><a href="#s4">運営費用（USALI準拠 部門別）</a></li>
+    <li><a href="#s5">損益計算の流れ（売上→GOP→NOI→CF）</a></li>
+    <li><a href="#s6">資金計画（融資・返済シミュレーション）</a></li>
+    <li><a href="#s7">固定費（税金・保険・FF&E積立）</a></li>
+    <li><a href="#s8">投資回収指標（利回り・回収年数）</a></li>
+    <li><a href="#s9">前提条件の保守性と感度分析</a></li>
+  </ol>
+</div>
+
+<!-- Section 1: Construction Cost -->
+<div class="section" id="s1">
+  <h2><span class="section-num">1</span>建設コスト</h2>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">🏗️</span> 建設単価の根拠</div>
+    <table>
+      <tr><th>項目</th><th>数値</th></tr>
+      <tr><td>坪単価 <span class="source">（松井建設 2025.10 高岡RC6Fホテル実績）</span></td><td class="val">290万円/坪</td></tr>
+      <tr><td>㎡単価 <span class="source">（290万÷3.30579㎡/坪）</span></td><td class="val">¥878,000/㎡</td></tr>
+      <tr><td>客室MEP設備費 <span class="source">（UB・給排水・空調・電気・防災・電子錠）</span></td><td class="val">¥250万/室</td></tr>
+      <tr><td>既存建物解体費</td><td class="val">¥1,500万</td></tr>
+    </table>
+    <div class="note">
+      <strong>📌 坪単価の算出根拠：</strong><br>
+      ① 松井建設 実績見積（2025年10月 高岡RC6Fホテル）＝ <strong>302万/坪</strong><br>
+      ② archi-book 2025年 北海道RC予測単価  ＝ <strong>281万/坪</strong><br>
+      → 両者の平均値として札幌RC想定 <strong>290万円/坪</strong> を採用。<br>
+      室数が多い案ほどMEP設備費が加算され、建設費が高くなる仕組みです。
+    </div>
+    <div class="formula">
+      <span class="label">建設費 計算式：</span>
+      建設費 = 延べ床面積 × ¥878,000/㎡ + 客室数 × ¥250万/室 + 解体費 ¥1,500万
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> 工種別コスト構成比</div>
+    <div class="bar-chart">
+      <div class="bar-segment" style="flex:18.4;background:#264653">18%</div>
+      <div class="bar-segment" style="flex:25.1;background:#2a9d8f">25%</div>
+      <div class="bar-segment" style="flex:35.9;background:#e76f51">36%</div>
+      <div class="bar-segment" style="flex:3.3;background:#e9c46a"></div>
+      <div class="bar-segment" style="flex:3.6;background:#606c38"></div>
+      <div class="bar-segment" style="flex:1.4;background:#22c55e"></div>
+      <div class="bar-segment" style="flex:11.7;background:#6b7394">12%</div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#264653"></div>躯体 18.4%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2a9d8f"></div>仕上 25.1%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e76f51"></div>設備 35.9%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e9c46a"></div>仮設 3.3%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#606c38"></div>杭・土工 3.6%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>外構 1.4%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6b7394"></div>共通費 11.7%</div>
+    </div>
+    <p style="margin-top:12px;font-size:.75rem;color:var(--dim)">出典: 松井建設見積内訳（2025年10月 高岡RC6Fホテル）の構成比を適用</p>
+  </div>
+</div>
+
+<!-- Section 2: Total Project Cost -->
+<div class="section" id="s2">
+  <h2><span class="section-num">2</span>総事業費の構成</h2>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">💎</span> 事業費の内訳</div>
+    <table>
+      <tr><th>費目</th><th>算出方法</th></tr>
+      <tr><td>建設費（本体）</td><td>延べ床面積 × ¥878k/㎡ + 解体費 + MEP設備費</td></tr>
+      <tr><td>設計監理費 <span class="tag">12%</span></td><td>建設費 × 12% <span class="source">【国交省告示基準】</span></td></tr>
+      <tr><td>FF&E初期購入 <span class="tag">¥800万/室</span></td><td>客室数 × ¥800万 <span class="source">（ブティックホテル水準）</span></td></tr>
+      <tr><td>開業準備費</td><td>¥500万 <span class="source">（採用・研修・マーケティング）</span></td></tr>
+      <tr><td>許認可・登記費</td><td>¥300万</td></tr>
+      <tr><td>建中金利</td><td>建設費 × 2.5% × (18ヶ月÷24) <span class="source">（工期18ヶ月）</span></td></tr>
+    </table>
+    <div class="formula">
+      <span class="label">総事業費 計算式：</span>
+      総事業費 = 建設費 + 設計費(12%) + FF&E(¥800万/室) + 開業準備費(¥500万) + 許認可(¥300万) + 建中金利
+    </div>
+    <div class="note">
+      <strong>📌 最上階（オフィス/ショールーム）の扱い：</strong><br>
+      最上階はクライアントの事務所兼ショールームのため、ホテル運用による<strong>投資回収の対象外</strong>としています。
+      回収年数・利回り計算では、最上階の建設コストを差し引いた「ホテル部分事業費」を使用しています。
+    </div>
+  </div>
+</div>
+
+<!-- Section 3: Revenue Model -->
+<div class="section" id="s3">
+  <h2><span class="section-num">3</span>収入モデル</h2>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon">🛏️</span> 宿泊収入</div>
+      <table>
+        <tr><th>パラメータ</th><th>設定値</th></tr>
+        <tr><td>稼働率</td><td class="val">65%</td></tr>
+        <tr><td>ADR（平均客室単価）</td><td class="val">案ごとに設定</td></tr>
+      </table>
+      <div style="margin-top:12px">
+        <table>
+          <tr><th>案</th><th>ADR</th></tr>
+          <tr><td style="color:#ff6b8a">案A</td><td>¥80,000</td></tr>
+          <tr><td style="color:#4ecdc4">案B</td><td>¥76,000</td></tr>
+          <tr><td style="color:#ffbe0b">案C</td><td>¥62,000</td></tr>
+          <tr><td style="color:#a855f7">案D</td><td>¥58,000</td></tr>
+          <tr><td style="color:#06b6d4">案E</td><td>¥56,000</td></tr>
+          <tr><td style="color:#f97316">案F</td><td>¥48,000</td></tr>
+        </table>
+      </div>
+      <div class="formula">
+        <span class="label">宿泊収入 計算式：</span>
+        年間宿泊収入 = 客室数 × ADR × 稼働率 × 365日
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-title"><span class="icon">🍽️</span> F&B（飲食）収入</div>
+      <table>
+        <tr><th>パラメータ</th><th>設定値</th></tr>
+        <tr><td>F&B基礎月商</td><td class="val">¥350万/月</td></tr>
+        <tr><td>朝食単価</td><td class="val">¥3,000/人</td></tr>
+        <tr><td>朝食喫食率</td><td class="val">70%</td></tr>
+        <tr><td>その他収入</td><td class="val">¥50万/月</td></tr>
+      </table>
+      <div class="note" style="margin-top:12px">
+        <strong>F&B基礎月商の内訳：</strong><br>
+        ランチ: ¥1,500 × 25席 × 25日 = ¥93.75万<br>
+        ディナー: ¥5,000 × 20席 × 20日 = ¥200万<br>
+        ドリンク他 ≈ ¥56万<br>
+        → 合計 約 <strong>¥350万/月</strong>
+      </div>
+      <div class="formula">
+        <span class="label">F&B収入 計算式：</span>
+        年間F&B = 基礎月商×12 + 宿泊客数×朝食単価×喫食率
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">📈</span> 稼働率  65% の根拠</div>
+    <table>
+      <tr><th>参照データ</th><th>稼働率</th></tr>
+      <tr><td>札幌市 2023年度 ホテル平均稼働率</td><td class="val">72.1%</td></tr>
+      <tr><td>全国ビジネスホテル平均 2023</td><td>76.2%</td></tr>
+      <tr><td>全国リゾートホテル平均 2023</td><td>58.4%</td></tr>
+    </table>
+    <div class="note">
+      札幌市平均 72% に対し、<strong>保守的に65%</strong>を採用。開業初期のランプアップ期間（1-2年目はさらに低い可能性）を考慮し、安定期の数値としても余裕を持たせています。
+      ダッシュボードのシミュレータでは50〜85%の範囲で稼働率を変動させた場合のシミュレーションが可能です。
+    </div>
+  </div>
+</div>
+
+<!-- Section 4: Operating Expenses -->
+<div class="section" id="s4">
+  <h2><span class="section-num">4</span>運営費用（USALI準拠 部門別）</h2>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> USALI（統一会計基準）に基づく費用率</div>
+    <p style="font-size:.78rem;color:var(--dim);margin-bottom:14px">
+      USALI = Uniform System of Accounts for the Lodging Industry（宿泊産業統一会計基準）第12版に準拠
+    </p>
+    <table>
+      <tr><th>費目</th><th>比率</th><th style="text-align:left">算出ベース</th><th style="text-align:left">出典・根拠</th></tr>
+      <tr><td><strong>人件費</strong></td><td class="val">30%</td><td style="text-align:left">対・総売上</td><td style="text-align:left"><span class="source">日本旅館協会(2023) ホテル平均29.7%</span></td></tr>
+      <tr><td><strong>水光熱費</strong></td><td class="val">12%</td><td style="text-align:left">対・総売上</td><td style="text-align:left"><span class="source">北海道ホテル10-15%(冬期暖房考慮)</span></td></tr>
+      <tr><td><strong>食材原価</strong></td><td class="val">30%</td><td style="text-align:left">対・F&B売上</td><td style="text-align:left"><span class="source">飲食業界標準28-32%</span></td></tr>
+      <tr><td>消耗品・アメニティ</td><td class="val">3%</td><td style="text-align:left">対・宿泊売上</td><td style="text-align:left"><span class="source">ブティックホテル水準</span></td></tr>
+      <tr><td>販売・マーケティング</td><td class="val">5%</td><td style="text-align:left">対・総売上</td><td style="text-align:left"><span class="source">OTA手数料含む</span></td></tr>
+      <tr><td>一般管理費</td><td class="val">6%</td><td style="text-align:left">対・総売上</td><td style="text-align:left"><span class="source">会計・法務・事務</span></td></tr>
+      <tr><td>施設維持管理(POM)</td><td class="val">4%</td><td style="text-align:left">対・総売上</td><td style="text-align:left"><span class="source">Property Operation & Maintenance</span></td></tr>
+      <tr><td>IT・予約システム</td><td class="val">2%</td><td style="text-align:left">対・総売上</td><td style="text-align:left"><span class="source">PMS・チャネルマネージャー等</span></td></tr>
+    </table>
+    
+    <div class="note" style="margin-top:16px">
+      <strong>📌 注意：費用率の算出ベースが異なります</strong><br>
+      「食材原価」は<strong>F&B売上のみ</strong>に対する30%、「アメニティ」は<strong>宿泊売上のみ</strong>に対する3%として計算。
+      その他の項目は<strong>総売上</strong>に対する比率です。この区分はUSALI基準に準拠しています。
+    </div>
+  </div>
+</div>
+
+<!-- Section 5: PL Flow -->
+<div class="section" id="s5">
+  <h2><span class="section-num">5</span>損益計算の流れ</h2>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> 売上 → GOP → NOI → キャッシュフロー</div>
+    
+    <div style="font-size:.82rem;line-height:2.2">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="background:var(--accent2);color:#0f1117;padding:2px 10px;border-radius:4px;font-weight:600;font-size:.75rem">売上</span>
+        <span>= 宿泊収入 + F&B収入 + その他</span>
+      </div>
+      <div style="color:var(--dim);padding-left:20px;font-size:.78rem">ー 運営費用（人件費+水光熱+食材+アメニティ+販売+管理+POM+IT）</div>
+      <div style="display:flex;align-items:center;gap:8px;margin:8px 0 4px">
+        <span style="background:var(--accent);color:#0f1117;padding:2px 10px;border-radius:4px;font-weight:600;font-size:.75rem">GOP</span>
+        <span>= 売上 − 運営費用 <span class="source">（営業粗利益）</span></span>
+      </div>
+      <div style="color:var(--dim);padding-left:20px;font-size:.78rem">ー 固定資産税 ー 火災保険 ー FF&E積立</div>
+      <div style="display:flex;align-items:center;gap:8px;margin:8px 0 4px">
+        <span style="background:var(--accent3);color:#fff;padding:2px 10px;border-radius:4px;font-weight:600;font-size:.75rem">NOI</span>
+        <span>= GOP − 固定費 <span class="source">（純営業利益）</span></span>
+      </div>
+      <div style="color:var(--dim);padding-left:20px;font-size:.78rem">ー 年間ローン返済額（元利均等）</div>
+      <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
+        <span style="background:var(--accent4);color:#fff;padding:2px 10px;border-radius:4px;font-weight:600;font-size:.75rem">CF</span>
+        <span>= NOI − 年間返済額 <span class="source">（税引前キャッシュフロー）</span></span>
+      </div>
+    </div>
+    
+    <div class="note">
+      <strong>📌 GOP率の目安：</strong>ブティックホテル業界では GOP率 35-45% が健全とされます。
+      本モデルでは各案で30-40%程度を想定しています。
+    </div>
+  </div>
+</div>
+
+<!-- Section 6: Financing -->
+<div class="section" id="s6">
+  <h2><span class="section-num">6</span>資金計画（融資・返済）</h2>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">🏦</span> 融資条件</div>
+    <table>
+      <tr><th>パラメータ</th><th>設定値</th></tr>
+      <tr><td>借入比率（LTV）</td><td class="val">70%</td></tr>
+      <tr><td>金利</td><td class="val">2.5％（固定金利想定）</td></tr>
+      <tr><td>返済期間</td><td class="val">25年</td></tr>
+      <tr><td>返済方式</td><td class="val">元利均等返済</td></tr>
+      <tr><td>自己資金</td><td class="val">30%</td></tr>
+    </table>
+    <div class="formula">
+      <span class="label">年間返済額 計算式（元利均等）：</span>
+      年間返済 = 借入額 × [ r(1+r)ⁿ / ((1+r)ⁿ − 1) ]<br>
+      ※ r=年利(0.025)、n=返済年数(25)
+    </div>
+    <div class="note">
+      <strong>📌 融資対象：</strong>自社所有の土地があるため、土地取得費は不要。融資はホテル建設費（ホテル部分の事業費）のみが対象です。
+      最上階オフィス分は回収対象外のため、融資計算からも除外しています。<br>
+      <strong>📌 金利想定：</strong>2025年時点の不動産事業向け長期固定金利水準（メガバンク2.0-3.0%）の中間値を採用。
+    </div>
+  </div>
+</div>
+
+<!-- Section 7: Fixed Costs -->
+<div class="section" id="s7">
+  <h2><span class="section-num">7</span>固定費</h2>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">🏛️</span> 年間固定費の内訳</div>
+    <table>
+      <tr><th>費目</th><th>算出方法</th></tr>
+      <tr><td>固定資産税</td><td>ホテル建設費 × 評価率60% × 税率1.4% <span class="source">（札幌市）</span></td></tr>
+      <tr><td>火災・賠償保険</td><td class="val">¥150万/年</td></tr>
+      <tr><td>FF&E積立</td><td>総売上 × 3% <span class="source">（USALI第12版推奨 2-5%）</span></td></tr>
+    </table>
+    <div class="note">
+      <strong>📌 固定資産税評価率：</strong>新築RCの場合、固定資産税評価額は建設費の約60%が一般的です。
+      この評価額に対して札幌市の税率1.4%を乗じます。<br>
+      <strong>📌 FF&E積立：</strong>客室の家具・備品更新に充てる積立金（Furniture, Fixtures & Equipment Reserve）。
+      USALI基準では総売上の2-5%を推奨しており、本モデルでは3%を採用しています。
+    </div>
+  </div>
+</div>
+
+<!-- Section 8: Investment Metrics -->
+<div class="section" id="s8">
+  <h2><span class="section-num">8</span>投資回収指標</h2>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">📈</span> 主要投資指標の定義と計算方法</div>
+    <table>
+      <tr><th>指標</th><th>計算式</th><th style="text-align:left">解説</th></tr>
+      <tr><td><strong>NOI利回り</strong><br><span class="source">(Cap Rate)</span></td><td class="val">NOI ÷ 事業費</td><td style="text-align:left">不動産投資の基本指標。5%以上で健全</td></tr>
+      <tr><td><strong>投資回収年数</strong><br><span class="source">(Simple Payback)</span></td><td class="val">事業費 ÷ NOI</td><td style="text-align:left">初期投資を回収するまでの年数。15-20年が目安</td></tr>
+      <tr><td><strong>RevPAR</strong><br><span class="source">(Revenue Per Available Room)</span></td><td class="val">ADR × 稼働率</td><td style="text-align:left">販売可能客室あたり収益。ホテル間比較の基本指標</td></tr>
+      <tr><td><strong>GOP率</strong></td><td class="val">GOP ÷ 総売上</td><td style="text-align:left">営業効率を示す。35-45%が健全水準</td></tr>
+    </table>
+    <div class="note">
+      <strong>📌 投資回収計算の対象：</strong>最上階オフィス分を除いた「ホテル部分事業費」を基準に計算しています。
+      土地は自社所有のため、土地コストは含みません。
+    </div>
+  </div>
+</div>
+
+<!-- Section 9: Sensitivity -->
+<div class="section" id="s9">
+  <h2><span class="section-num">9</span>前提条件の保守性と感度分析</h2>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">🔍</span> 保守的な想定の一覧</div>
+    <table>
+      <tr><th>項目</th><th>本モデル</th><th>業界平均</th><th style="text-align:left">保守度</th></tr>
+      <tr><td>稼働率</td><td class="val">65%</td><td>72%（札幌）</td><td style="text-align:left;color:#22c55e">保守的 ↓</td></tr>
+      <tr><td>水光熱費</td><td class="val">12%</td><td>10-15%</td><td style="text-align:left;color:var(--accent)">中間値</td></tr>
+      <tr><td>人件費</td><td class="val">30%</td><td>29.7%</td><td style="text-align:left;color:var(--accent)">ほぼ平均</td></tr>
+      <tr><td>FF&E積立</td><td class="val">3%</td><td>2-5%</td><td style="text-align:left;color:var(--accent)">中間値</td></tr>
+      <tr><td>金利</td><td class="val">2.5%</td><td>2.0-3.0%</td><td style="text-align:left;color:var(--accent)">中間値</td></tr>
+    </table>
+    <div class="note">
+      <strong>📌 ダッシュボードのインタラクティブシミュレータ：</strong><br>
+      稼働率は50%〜85%の範囲で変動させた場合の損益シミュレーションが可能です。
+      ADRとGOP率の損益分岐点もダッシュボード上で確認できます。
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-title"><span class="icon">⚠️</span> 本モデルに含まれていない項目</div>
+    <table>
+      <tr><th>未反映項目</th><th style="text-align:left">補足</th></tr>
+      <tr><td>開業初期の稼働ランプアップ</td><td style="text-align:left">1年目50%→2年目60%→3年目65%のような段階的上昇</td></tr>
+      <tr><td>季節変動</td><td style="text-align:left">札幌の冬季(12-2月)・夏季(7-8月)の繁閑差</td></tr>
+      <tr><td>管理運営委託費</td><td style="text-align:left">外部運営会社委託の場合、売上の3-5%が追加</td></tr>
+      <tr><td>法人税・所得税</td><td style="text-align:left">税引前キャッシュフローまでの計算。税引後は別途協議</td></tr>
+      <tr><td>IRR / NPV</td><td style="text-align:left">10年間キャッシュフローの内部収益率。今後追加可</td></tr>
+      <tr><td>高層階プレミアム</td><td style="text-align:left">7F建て案の施工費上昇（仮設足場等）は未考慮</td></tr>
+    </table>
+    <div class="note">
+      上記の項目は今後の詳細設計段階で順次反映していく予定です。
+      現段階では「概算比較」として、全案に同一条件を適用し、<strong>案ごとの相対的な優劣</strong>を把握することを目的としています。
+    </div>
+  </div>
+</div>
+
+<!-- Print Note -->
+<div class="print-note">
+  <p>本資料はボリュームスタディ ダッシュボード（<a href="https://akihamada.github.io/maruyama-hotel-volume-study/" style="color:var(--accent2)">オンライン版</a>）の補足説明書です。</p>
+  <p style="margin-top:4px">© 2026 AHA 浜田晶則建築設計事務所 All Rights Reserved.</p>
+</div>
+
+</div>
+</body>
+</html>
