@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>円山ホテル ボリュームスタディ</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#090b10; --surface:rgba(18,22,33,0.85); --surface2:rgba(26,32,48,0.9);
+  --glass:rgba(255,255,255,0.03); --glass-border:rgba(255,255,255,0.06);
+  --text:#e4e8f1; --dim:#6b7394; --accent:#5b8def;
+  --a:#ff6b8a; --b:#4ecdc4; --g:#ffbe0b; --d:#a855f7; --e:#06b6d4; --z:#f97316;
+  --a2:rgba(255,107,138,0.12); --b2:rgba(78,205,196,0.12);
+  --g2:rgba(255,190,11,0.12); --d2:rgba(168,85,247,0.12);
+  --e2:rgba(6,182,212,0.12); --z2:rgba(249,115,22,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter','Noto Sans JP',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(91,141,239,0.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(168,85,247,0.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+.wrap{max-width:1440px;margin:0 auto;padding:0 28px;position:relative;z-index:1}
+
+/* Header */
+.hero{padding:56px 0 40px;text-align:center}
+.hero-tag{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(91,141,239,0.12);color:var(--accent);font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#e4e8f1 30%,#8b9fd4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.hero-sub{color:var(--dim);font-size:.88rem;margin-bottom:28px}
+.badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.badge{background:var(--surface);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:10px;padding:10px 18px;font-size:.82rem;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:100px}
+.badge-val{font-size:1.2rem;font-weight:700;color:#fff}
+.badge-label{font-size:.68rem;color:var(--dim);letter-spacing:.04em}
+
+/* Section */
+.section{margin-top:48px}
+.section-title{font-size:1.1rem;font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:3px;height:18px;border-radius:2px;background:var(--accent)}
+
+/* Cards */
+.card{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:16px;padding:24px;transition:all .3s}
+.card:hover{border-color:rgba(255,255,255,0.1);box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.card-head{font-size:.88rem;font-weight:500;color:var(--dim);margin-bottom:16px}
+
+/* Grid */
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(480px,1fr));gap:20px}
+.g4{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+@media(max-width:1200px){.g4{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.g4,.g2{grid-template-columns:1fr}}
+
+/* Option Cards */
+.opt-card{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:all .4s}
+.opt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.opt-card[data-opt=a]::before{background:var(--a)} .opt-card[data-opt=b]::before{background:var(--b)}
+.opt-card[data-opt=g]::before{background:var(--g)} .opt-card[data-opt=d]::before{background:var(--d)}
+.opt-card[data-opt=e]::before{background:var(--e)} .opt-card[data-opt=z]::before{background:var(--z)}
+.opt-card:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+.opt-name{font-size:1.05rem;font-weight:700;margin-bottom:2px}
+.opt-sub{font-size:.75rem;color:var(--dim);margin-bottom:16px}
+.opt-big{font-size:2rem;font-weight:800;line-height:1}
+.opt-big-label{font-size:.7rem;color:var(--dim);margin-top:2px}
+.opt-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.opt-stat{display:flex;flex-direction:column}
+.opt-stat-val{font-size:1rem;font-weight:600}
+.opt-stat-label{font-size:.68rem;color:var(--dim)}
+
+/* Gauges */
+.gauge-row{display:flex;gap:20px;margin-top:12px;justify-content:center}
+.gauge-item{text-align:center;flex:1}
+.gauge-item canvas{max-width:100px;max-height:100px;margin:0 auto}
+.gauge-val{font-size:1.1rem;font-weight:700;margin-top:4px}
+.gauge-lbl{font-size:.68rem;color:var(--dim)}
+
+/* Site Plans */
+.site-plan-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:16px}
+@media(max-width:900px){.site-plan-row{grid-template-columns:repeat(3,1fr)}}
+.site-plan{text-align:center}
+.site-plan svg{width:100%;max-width:180px;aspect-ratio:1}
+.site-plan-label{font-size:.78rem;font-weight:500;margin-top:6px}
+.site-plan-sub{font-size:.68rem;color:var(--dim)}
+
+/* Revenue */
+.rev-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+@media(max-width:900px){.rev-grid{grid-template-columns:repeat(3,1fr)}}
+.rev-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:16px;text-align:center}
+.rev-val{font-size:1.6rem;font-weight:800;margin:8px 0 2px}
+.rev-sub{font-size:.7rem;color:var(--dim)}
+
+/* Cost Breakdown */
+.cost-bar-wrap{display:flex;height:28px;border-radius:6px;overflow:hidden;margin:8px 0 4px}
+.cost-bar-seg{display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:600;color:#fff;min-width:20px;transition:flex .4s}
+.cost-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:.7rem}
+.cost-legend span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle}
+
+/* P&L */
+.pl-row{display:grid;grid-template-columns:160px repeat(6,1fr);gap:4px;font-size:.76rem;padding:5px 0;border-bottom:1px solid var(--glass-border)}
+.pl-row.pl-head{font-weight:600;color:var(--dim);font-size:.7rem;border-bottom:2px solid var(--glass-border)}
+.pl-row.pl-total{font-weight:700;border-top:2px solid var(--glass-border);border-bottom:none;padding-top:8px}
+.pl-row.pl-sub{font-size:.7rem;color:var(--dim);padding:3px 0}
+.pl-row.pl-section{font-weight:600;font-size:.72rem;padding-top:10px;border-bottom:2px solid var(--glass-border);color:#ccc}
+.pl-label{text-align:left;padding-left:8px}
+.pl-label small{display:block;font-size:.6rem;color:var(--dim);font-weight:400}
+.evidence-box{margin-top:16px;padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);font-size:.72rem;color:var(--dim);line-height:1.7}
+.evidence-box strong{color:var(--text);font-weight:600}
+.evidence-box .ev-tag{display:inline-block;background:rgba(78,205,196,0.15);color:#4ecdc4;padding:1px 8px;border-radius:4px;font-size:.62rem;font-weight:600;margin-right:6px}
+
+/* Heatmap */
+.hm-grid{display:grid;gap:2px;font-size:.7rem}
+.hm-cell{padding:6px 4px;text-align:center;border-radius:4px;font-weight:600}
+.hm-header{color:var(--dim);font-weight:500;font-size:.65rem}
+.hm-row-label{display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:var(--dim);font-size:.68rem}
+
+/* Breakeven */
+.be-bar-wrap{display:flex;align-items:center;gap:10px;margin:10px 0}
+.be-bar-label{min-width:50px;font-size:.78rem;font-weight:600;text-align:right}
+.be-bar-track{flex:1;height:28px;background:rgba(255,255,255,0.05);border-radius:6px;overflow:hidden;position:relative}
+.be-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.68rem;font-weight:700;color:#fff;transition:width .6s}
+.be-bar-marker{position:absolute;top:0;height:100%;width:2px;background:#fff;opacity:.6}
+.be-bar-marker-label{position:absolute;top:-16px;font-size:.58rem;color:var(--dim);white-space:nowrap;transform:translateX(-50%)}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:800px){.scenario-grid{grid-template-columns:1fr}}
+.scenario-card{padding:16px;border-radius:12px;border:1px solid var(--glass-border)}
+.scenario-card.improved{border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.03)}
+.scenario-row{display:flex;justify-content:space-between;padding:4px 0;font-size:.76rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+.scenario-row .sr-label{color:var(--dim)}
+.scenario-row .sr-val{font-weight:600}
+.scenario-row .sr-diff{font-size:.68rem;margin-left:6px}
+.bench-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.75rem}
+.bench-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.bench-range{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;position:relative;overflow:visible}
+.bench-fill{position:absolute;height:100%;border-radius:3px}
+.bench-marker{position:absolute;top:-5px;width:3px;height:16px;border-radius:2px;background:#fff}
+
+/* Chart */
+.chart-box{position:relative;height:300px}
+.chart-sm{position:relative;height:240px}
+
+/* Massing */
+.mass-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+@media(max-width:900px){.mass-row{grid-template-columns:repeat(3,1fr)}}
+.mass-item{text-align:center}
+.mass-label{font-size:.82rem;font-weight:600;margin-bottom:4px}
+.mass-sub{font-size:.7rem;color:var(--dim);margin-top:4px}
+
+/* Room Mix Table */
+.rmix-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+@media(max-width:900px){.rmix-grid{grid-template-columns:repeat(3,1fr)}}
+.rmix-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:10px;font-size:.72rem}
+.rmix-card-head{font-weight:700;font-size:.82rem;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.rmix-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.rmix-row:last-child{border-bottom:none}
+.rmix-type{font-weight:600;min-width:60px}
+.rmix-footer{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.1);font-weight:600;font-size:.68rem}
+.rmix-concept{font-size:.66rem;color:var(--dim);margin-top:8px;line-height:1.4;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,0.02)}
+
+/* Table */
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--glass-border)}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th,td{padding:11px 14px;text-align:center;border-bottom:1px solid var(--glass-border)}
+th{background:var(--surface2);font-weight:600;font-size:.75rem;letter-spacing:.03em;position:sticky;top:0}
+th:first-child,td:first-child{text-align:left;font-weight:500}
+td.hi{color:var(--accent);font-weight:700}
+tr:hover td{background:rgba(91,141,239,0.04)}
+
+/* Footer */
+footer{text-align:center;padding:48px 0;color:var(--dim);font-size:.75rem;border-top:1px solid var(--glass-border);margin-top:56px}
+
+/* Simulator */
+.sim-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:24px}
+@media(max-width:800px){.sim-controls{grid-template-columns:1fr}}
+.sim-slider-group{display:flex;flex-direction:column;gap:6px}
+.sim-label{font-size:.82rem;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.sim-val{font-size:1.1rem;font-weight:700;color:var(--accent)}
+.sim-range{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:linear-gradient(90deg,rgba(91,141,239,0.3),rgba(168,85,247,0.3));outline:none;cursor:pointer}
+.sim-range::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#a855f7);border:2px solid rgba(255,255,255,0.2);box-shadow:0 2px 8px rgba(91,141,239,0.4);cursor:pointer;transition:transform .2s}
+.sim-range::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.sim-range-labels{display:flex;justify-content:space-between;font-size:.65rem;color:var(--dim)}
+.sim-results{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+@media(max-width:900px){.sim-results{grid-template-columns:repeat(2,1fr)}}
+.sim-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:18px;text-align:center;transition:all .3s}
+.sim-card.green{border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.06)}
+.sim-card.yellow{border-color:rgba(255,190,11,0.3);background:rgba(255,190,11,0.06)}
+.sim-card.red{border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.06)}
+.sim-card-title{font-size:.72rem;color:var(--dim);margin-bottom:6px;font-weight:500}
+.sim-card-value{font-size:1.5rem;font-weight:800;margin-bottom:2px}
+.sim-card-sub{font-size:.7rem;color:var(--dim)}
+.sim-card.green .sim-card-value{color:#22c55e}
+.sim-card.yellow .sim-card-value{color:#ffbe0b}
+.sim-card.red .sim-card-value{color:#ef4444}
+.sim-compare{margin-top:8px;padding:16px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid var(--glass-border);font-size:.76rem;line-height:1.8}
+.sim-opt-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.sim-opt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sim-opt-name{min-width:60px;font-weight:600;font-size:.75rem}
+.sim-opt-bar{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;position:relative}
+.sim-opt-fill{height:100%;border-radius:4px;transition:width .4s}
+.sim-opt-val{min-width:80px;text-align:right;font-size:.72rem;font-weight:600}
+
+/* Verdict */
+.verdict{background:linear-gradient(135deg,rgba(91,141,239,0.08),rgba(168,85,247,0.06));border:1px solid rgba(91,141,239,0.2);border-radius:16px;padding:28px;margin-top:40px}
+.verdict h3{font-size:1rem;margin-bottom:10px}
+.verdict p{font-size:.85rem;line-height:1.9}
+
+/* Animate */
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.card,.opt-card{animation:rise .6s ease both}
+.opt-card:nth-child(2){animation-delay:.08s}.opt-card:nth-child(3){animation-delay:.16s}.opt-card:nth-child(4){animation-delay:.24s}
+
+/* Print */
+@media print{
+  body{background:#fff;color:#111}
+  .card,.opt-card{break-inside:avoid;box-shadow:none;border:1px solid #ddd}
+  body::before{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<div class="hero">
+  <div class="hero-tag">Volume Study Comparison</div>
+  <h1>円山ホテル ボリュームスタディ</h1>
+  <p class="hero-sub">6案比較ダッシュボード — 全34条例反映・施行令2条準拠</p>
+  <div class="badges">
+    <div class="badge"><span class="badge-val">406.89㎡</span><span class="badge-label">敷地面積</span></div>
+    <div class="badge"><span class="badge-val">80%</span><span class="badge-label">建ぺい率</span></div>
+    <div class="badge"><span class="badge-val">300%</span><span class="badge-label">容積率</span></div>
+    <div class="badge"><span class="badge-val">27m</span><span class="badge-label">高度地区</span></div>
+    <div class="badge"><span class="badge-val">325.5㎡</span><span class="badge-label">建築面積上限</span></div>
+    <div class="badge"><span class="badge-val">1,220.7㎡</span><span class="badge-label">容積対象上限</span></div>
+  </div>
+</div>
+
+<!-- Option Overview -->
+<div class="section">
+  <div class="section-title">概要比較</div>
+  <div class="g4" id="optCards"></div>
+</div>
+
+<!-- Room Mix Comparison -->
+<div class="section">
+  <div class="section-title">🛏 客室ミックス比較</div>
+  <div class="rmix-grid" id="roomMixGrid"></div>
+</div>
+
+<!-- Floor Room Maps -->
+<div class="section">
+  <div class="section-title">🏢 フロア別客室配置図</div>
+  <div class="rmix-grid" id="floorMapGrid"></div>
+</div>
+
+<!-- Massing -->
+<div class="section">
+  <div class="section-title">マッシング断面</div>
+  <div class="card">
+    <div class="mass-row" id="massRow"></div>
+  </div>
+</div>
+
+<!-- Coverage & FAR Gauges -->
+<div class="section">
+  <div class="section-title">建ぺい率・容積率使用率</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-head">建ぺい率（建築面積 / 敷地面積）上限 80%</div>
+      <div class="gauge-row" id="coverageGauges"></div>
+    </div>
+    <div class="card">
+      <div class="card-head">容積率使用率（容積対象 / 1,220.7㎡）上限 300%</div>
+      <div class="gauge-row" id="farGauges"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Site Plans -->
+<div class="section">
+  <div class="section-title">敷地利用図（配置計画）</div>
+  <div class="card">
+    <div class="card-head">1Fフットプリント（赤） + 駐車場（青） + 外構（緑）</div>
+    <div class="site-plan-row" id="sitePlans"></div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="section">
+  <div class="section-title">分析チャート</div>
+  <div class="g2">
+    <div class="card"><div class="card-head">多軸評価レーダー</div><div class="chart-box"><canvas id="radarChart"></canvas></div></div>
+    <div class="card"><div class="card-head">面積構成（延べ床 + テラス）</div><div class="chart-box"><canvas id="areaChart"></canvas></div></div>
+  </div>
+</div>
+<div class="section" style="margin-top:20px">
+  <div class="g2">
+    <div class="card"><div class="card-head">用途別面積配分</div><div class="chart-box"><canvas id="useChart"></canvas></div></div>
+    <div class="card"><div class="card-head">ネット面積 vs コア面積</div><div class="chart-box"><canvas id="effChart"></canvas></div></div>
+  </div>
+</div>
+
+<!-- Construction Cost (hidden until target budget confirmed) -->
+<div class="section" style="display:none">
+  <div class="section-title">🏗️ 建設コスト推計</div>
+  <div class="card">
+    <div class="card-head">実勢データ: 松井建設RC6Fホテル(302万/坪) + 北海道2025予測(281万/坪) → 札幌RC想定 <strong>290万/坪</strong></div>
+    <div class="rev-grid" id="costGrid"></div>
+    <div style="margin-top:20px">
+      <div class="card-head">工種別コスト内訳（松井建設実績ベース）</div>
+      <div id="costBreakdown"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Revenue P&L -->
+<div class="section">
+  <div class="section-title">💰 収支シミュレーション（USALI準拠・部門別）</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-head">年間P&L概算（稼働率65%）</div>
+      <div id="plTable"></div>
+      <div id="plEvidence"></div>
+    </div>
+    <div class="card">
+      <div class="card-head">投資回収・利回り</div>
+      <div class="rev-grid" style="grid-template-columns:repeat(2,1fr)" id="roiGrid"></div>
+      <div id="roiEvidence"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Breakeven & Improvement -->
+<div class="section" style="display:none">
+  <div class="section-title">🎯 損益分岐分析 & 投資効率評価</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-head">損益分岐稼働率（税引前CF≥０0）</div>
+      <div id="beChart"></div>
+      <div id="beNote"></div>
+    </div>
+    <div class="card">
+      <div class="card-head">NOI利回り目標（業界ベンチマーク）</div>
+      <div id="benchmarks"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-head">📐 投資効率の差が生じる理由（稼働率60% / ADR¥55-65k）</div>
+    <div id="efficiencyAnalysis"></div>
+  </div>
+</div>
+
+<!-- Sensitivity -->
+<div class="section">
+  <div class="section-title">📊 感度分析（案A：ADR × 稼働率 → 年間GOP）</div>
+  <div class="card">
+    <div class="card-head">セルの色が濃いほど高収益。単位：百万円</div>
+    <div id="heatmap" class="hm-grid" style="max-width:700px"></div>
+  </div>
+</div>
+
+<!-- Interactive Simulator -->
+<div class="section">
+  <div class="section-title">🔄 逆算シミュレーター（ADR × 客室数 × 稼働率 → 許容建設費）</div>
+  <div class="card">
+    <div class="card-head">スライダーを動かして、目標利回りを達成する許容建設費を逆算　※ADRは全室平均単価、面積は考慮しない簡易モデル</div>
+    <div class="sim-controls">
+      <div class="sim-slider-group">
+        <label class="sim-label">ADR（全室平均1泊単価）<span id="simAdrVal" class="sim-val">¥60,000</span></label>
+        <input type="range" id="simAdr" class="sim-range" min="30000" max="120000" step="1000" value="60000">
+        <div class="sim-range-labels"><span>¥30k</span><span>¥120k</span></div>
+      </div>
+      <div class="sim-slider-group">
+        <label class="sim-label">客室数<span id="simRoomsVal" class="sim-val">9室</span></label>
+        <input type="range" id="simRooms" class="sim-range" min="5" max="20" step="1" value="9">
+        <div class="sim-range-labels"><span>5室</span><span>20室</span></div>
+      </div>
+      <div class="sim-slider-group">
+        <label class="sim-label">稼働率<span id="simOccVal" class="sim-val">65%</span></label>
+        <input type="range" id="simOcc" class="sim-range" min="40" max="90" step="1" value="65">
+        <div class="sim-range-labels"><span>40%</span><span>90%</span></div>
+      </div>
+    </div>
+    <div id="simRoomNote" style="font-size:.72rem;color:var(--dim);margin-bottom:12px;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid var(--glass-border)"></div>
+    <div class="sim-results" id="simResults"></div>
+    <div class="sim-compare" id="simCompare"></div>
+    <div class="evidence-box" style="margin-top:16px">
+      <strong>📋 シミュレーター前提条件と根拠</strong><br>
+      <span class="ev-tag">建設費</span>許容上限は<strong>ホテル回収対象建設費</strong>ベース。最上階オフィス/ショールーム（~150㎡）の建設費はクライアント事業のため除外<br>
+      <span class="ev-tag">坪単価</span>全体建設費（オフィス含む）÷延べ床面積（1,320㎡≒399坪を基準）で算出。RC造ホテル実勢: 280-350万/坪<br>
+      <span class="ev-tag">ADR</span>全室平均単価。実際は客室面積により差がある（30㎡スイート¥80k / 25㎡ツイン¥55k / 20㎡コンパクト¥40k 等）。スライダーは加重平均値を想定<br>
+      <span class="ev-tag">F&B収入</span>カフェ・レストラン月商¥350万（固定）+ 朝食¥3,000×宿泊人数×70%。40席カフェ: L¥1,500×25席×25日 + D¥5,000×20席×20日 + ドリンク¥50万<br>
+      <span class="ev-tag">人件費30%</span>日本旅館協会(2023) ホテル平均29.7%。小規模ブティックでは30%が標準<br>
+      <span class="ev-tag">借入条件</span>LTV 70% / 金利2.5% / 25年返済。地方銀行ホテルファイナンス標準条件<br>
+      <span class="ev-tag">NOI利回り</span>CF損益分岐=NOI≧年間返済額。NOI3%=最低投資水準、4%=標準、5%=優良
+    </div>
+  </div>
+</div>
+
+<!-- Full Table -->
+<div class="section">
+  <div class="section-title">全項目比較表</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap"><table id="compTbl"></table></div>
+  </div>
+</div>
+
+<!-- Verdict -->
+<div class="verdict">
+  <h3>💡 クライアントへのご提案</h3>
+  <p>
+    <strong>300%の容積率では、階数を増やしても延べ床面積は増えません。</strong>7Fにするとコア（EV・階段・廊下）が2層分増え、ネット面積は5Fより45㎡減少します。<br><br>
+    <span style="color:var(--a)">■</span> <strong>案A（5F）</strong>= 全室40㎡超・段差テラスの「泊まれる邸宅」 ／
+    <span style="color:var(--b)">■</span> <strong>案B（5F 6m天井）</strong>= 建築としての発信力が最高 ／
+    <span style="color:var(--g)">■</span> <strong>案C（6F）</strong>= 3グレードで幅広い客層・容積率最大活用 ／
+    <span style="color:var(--d)">■</span> <strong>案D（7F）</strong>= 眺望階スイート・駐車場5台<br>
+    <span style="color:var(--e)">■</span> <strong>案E（6F）</strong>= スイート含む12室・投資効率最大化 ／
+    <span style="color:var(--z)">■</span> <strong>案F（7F）</strong>= 最多15室・RevPAR戦略（比較参考用）<br><br>
+    <strong>判断基準:</strong> 「街への開放性」と「建物の高さ」は容積率300%では<strong>トレードオフ</strong>です。どちらを優先するかがプロジェクトの方向性を決定します。
+  </p>
+</div>
+
+</div>
+
+<footer>
+  <p style="font-size:.85rem;font-weight:500;margin-bottom:4px">Sapporo Maruyama Hotel — Volume Study Dashboard v3</p>
+  <p>akimachome architects ／ 2026.03.22 ／ 全34条例反映・施行令2条準拠 ／ コスト: 松井建設(2025.10高岡)+北海道2025予測</p>
+</footer>
+
+<script>
+/**
+ * ========================================
+ * CONFIG — 汎用パラメータ（他プロジェクト転用時はここを書き換え）
+ * ========================================
+ * 出典:
+ *   建設費: 松井建設RC6Fホテル見積(2025.10/高岡) 302万/坪
+ *          北海道ホテル建築費2025予測 281万/坪 (archi-book.com)
+ *          RC造全国平均2025 202万/坪
+ *   ADR:   札幌ブティックホテル想定
+ */
+const CONFIG = {
+  // ── 建設コスト ──
+  costPerSqm: 878000,       // 290万/坪 ÷ 3.30579（松井302万×北海道補正）
+  mepPerRoom: 2500000,      // 客室設備費 ¥250万/室（UB,給排水,個別空調,電気,防災,電子錠）
+  demolitionCost: 15000000,  // 既存建物解体費（自社ビル建替・土地取得費0）
+  costBreakdown: [
+    {name:'躯体(RC+型枠+鉄筋+鉄骨)', ratio:0.184, color:'#264653'},
+    {name:'仕上(客室+外部+内装)',     ratio:0.251, color:'#2a9d8f'},
+    {name:'設備(電気+空調+衛生)',     ratio:0.359, color:'#e76f51'},
+    {name:'仮設',                     ratio:0.033, color:'#e9c46a'},
+    {name:'杭・土工',                 ratio:0.036, color:'#606c38'},
+    {name:'外構',                     ratio:0.014, color:'#22c55e'},
+    {name:'共通費(管理費)',            ratio:0.117, color:'#6b7394'},
+    {name:'予備費',                   ratio:0.006, color:'#444'},
+  ],
+  // ── 収入パラメータ ──
+  occupancy: 0.65,            // 安定期想定65%（札幌全体平均72%）
+  fbBaseMonthly: 3500000,     // F&B基礎月商 350万（40席カフェL¥1,500×25席×25日+D¥5,000×20席×20日+ドリンク）
+  breakfastPrice: 3000,       // 朝食単価（ブティックホテル水準）
+  breakfastRate: 0.70,        // 朝食喫食率
+  otherMonthly: 500000,       // その他（物販・イベント等）
+  // ── USALI準拠 部門別費用率 ──
+  opex: {
+    labor:    0.30,  // 人件費（対総売上）   出典: 日本旅館協会 ホテル平均29.7%
+    utility:  0.12,  // 水光熱費（対総売上） 出典: 北海道ホテル10-15%(冬期暖房)
+    foodCost: 0.30,  // 食材原価（対F&B売上） 飲食業界標準30%
+    amenity:  0.03,  // 消耗品・アメニティ（対宿泊売上）
+    sales:    0.05,  // 販売・マーケティング（対総売上） OTA手数料含
+    admin:    0.06,  // 一般管理費（対総売上） 会計・法務・事務
+    pom:      0.04,  // 施設維持管理（対総売上） POM
+    system:   0.02,  // IT・予約システム（対総売上）
+  },
+  // ── 固定費 ──
+  ffneRate: 0.03,             // FF&E reserve 3%（対総売上）USALI推奨
+  propertyTaxRate: 0.014,     // 固定資産税率 1.4%（札幌市）
+  buildingAssessRate: 0.60,   // 固定資産税評価率（新築RC→建設費の約60%）
+  insurance: 1500000,         // 火災・賠償責任保険 年150万
+  // ── 資金計画 ──
+  loanRatio: 0.70,
+  interestRate: 0.025,
+  loanYears: 25,
+  // ── 総事業費追加項目 ──
+  designFeeRate: 0.12,        // 設計監理費 12%（対建設費）【国交省告示基準】
+  ffnePerRoom: 8000000,       // FF&E初期購入 ¥800万/室（ブティックホテル水準）
+  preOpeningCost: 5000000,    // 開業準備費 ¥500万（採用・研修・マーケティング）
+  permitCost: 3000000,        // 登記・許認可・各種申請費 ¥300万
+  constructionMonths: 18,     // 工期18ヶ月
+  // ── エビデンス ──
+  sources: {
+    cost: '松井建設見積(2025.10高岡RC6Fホテル) / archi-book(2025北海道予測)',
+    labor: '日本旅館協会(2023) ホテル平均29.7%',
+    utility: '北海道ホテル水光熱費10-15% (totoka.jp/relohotel)',
+    foodCost: '飲食業界標準 食材原価率28-32%',
+    occupancy: '札幌市2023年度平均稼働率72.1% → 開業初期保守60%',
+    ffne: 'USALI第12版推奨 売上2-5%',
+    tax: '札幌市固定資産税率1.4% (city.sapporo.jp)',
+  }
+};
+
+/** Color palette */
+const C={a:{m:'#ff6b8a',bg:'rgba(255,107,138,0.2)',b:'rgba(255,107,138,0.8)'},b:{m:'#4ecdc4',bg:'rgba(78,205,196,0.2)',b:'rgba(78,205,196,0.8)'},g:{m:'#ffbe0b',bg:'rgba(255,190,11,0.2)',b:'rgba(255,190,11,0.8)'},d:{m:'#a855f7',bg:'rgba(168,85,247,0.2)',b:'rgba(168,85,247,0.8)'},e:{m:'#06b6d4',bg:'rgba(6,182,212,0.2)',b:'rgba(6,182,212,0.8)'},z:{m:'#f97316',bg:'rgba(249,115,22,0.2)',b:'rgba(249,115,22,0.8)'}};
+const O=[
+  {id:'a',name:'案A',sub:'5F 全室ラグジュアリー邸宅',c:C.a,floors:[320,300,265,225,185],terraces:[10,15,20,30,45],fn:['1F ロビー・カフェ','2F レストラン','3F 客室','4F 客室','5F オフィス'],h:18,rooms:7,lic:'旅館',far:99.7,net:1045,total:1295,terr:120,n1f:270,park:2,site:87,ceil:4.0,shadow:'◎',coverage:78.7,buildArea:320,uses:{pub:620,guest:490,office:185},adr:80000,
+    roomMix:[{type:'グランドスイート',count:2,area:55,adr:105000},{type:'デラックス',count:5,area:38,adr:70000}],concept:'全室40㎡超・段差テラス付き「泊まれる邸宅」。日影◎で近隣配慮にも優れる',floorRooms:[{f:'1F',use:'ロビー・カフェ',rooms:[]},{f:'2F',use:'レストラン',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'GS',a:55},{t:'DX',a:38},{t:'DX',a:38},{t:'DX',a:38}]},{f:'4F',use:'客室',rooms:[{t:'GS',a:55},{t:'DX',a:38},{t:'DX',a:38}]},{f:'5F',use:'オフィス',rooms:[]}]},
+  {id:'b',name:'案B',sub:'5F デザイナーズ旅館',c:C.b,floors:[320,200,270,225,180],terraces:[10,15,15,25,45],fn:['1F ロビー(6m天井)','2F レストラン','3F 客室','4F 客室','5F オフィス'],h:20,rooms:7,lic:'旅館',far:91.5,net:955,total:1195,terr:110,n1f:270,park:2,site:87,ceil:6.0,shadow:'◎◎',coverage:78.7,buildArea:320,uses:{pub:520,guest:495,office:180},adr:76000,
+    roomMix:[{type:'スイート',count:2,area:50,adr:95000},{type:'ジュニアスイート',count:5,area:35,adr:68000}],concept:'6m天井の象徴的ロビーが建築発信力No.1。全室スイート級の上質空間',floorRooms:[{f:'1F',use:'ロビー(6m天井)',rooms:[]},{f:'2F',use:'レストラン',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:50},{t:'JS',a:35},{t:'JS',a:35},{t:'JS',a:35}]},{f:'4F',use:'客室',rooms:[{t:'ST',a:50},{t:'JS',a:35},{t:'JS',a:35}]},{f:'5F',use:'オフィス',rooms:[]}]},
+  {id:'g',name:'案C',sub:'6F 全室40㎡均一',c:C.g,floors:[280,260,230,220,210,150],terraces:[10,12,15,15,20,35],fn:['1F ロビー・カフェ','2F 客室','3F 客室','4F 客室','5F 客室','6F オフィス'],h:22,rooms:12,lic:'旅館',far:97.8,net:1070,total:1350,terr:107,n1f:235,park:3,site:120,ceil:4.0,shadow:'○',coverage:68.8,buildArea:280,uses:{pub:540,guest:660,office:150},adr:62000,
+    roomMix:[{type:'コーナースイート',count:2,area:42,adr:78000},{type:'デラックスツイン',count:4,area:40,adr:62000},{type:'デラックスダブル',count:6,area:40,adr:55000}],concept:'全室40㎡均一で運営効率最大化。清掃・備品・施工の標準化でコスト削減。均質な上質体験',floorRooms:[{f:'1F',use:'ロビー・カフェ',rooms:[]},{f:'2F',use:'客室',rooms:[{t:'CS',a:42},{t:'DT',a:40},{t:'DD',a:40}]},{f:'3F',use:'客室',rooms:[{t:'DT',a:40},{t:'DT',a:40},{t:'DD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'CS',a:42},{t:'DD',a:40},{t:'DD',a:40}]},{f:'5F',use:'客室',rooms:[{t:'DT',a:40},{t:'DD',a:40},{t:'DD',a:40}]},{f:'6F',use:'オフィス',rooms:[]}]},
+  {id:'d',name:'案D',sub:'7F 眺望タワー',c:C.d,floors:[245,230,195,180,165,155,145],terraces:[10,10,15,15,20,25,40],fn:['1F ロビー','2F レストラン','3F 客室','4F 客室','5F 客室','6F 客室','7F オフィス'],h:25,rooms:10,lic:'ホテル',far:96.9,net:1000,total:1315,terr:135,n1f:200,park:5,site:162,ceil:4.0,shadow:'△',coverage:60.2,buildArea:245,uses:{pub:475,guest:695,office:145},adr:58000,
+    roomMix:[{type:'ペントハウススイート',count:2,area:40,adr:85000},{type:'ツイン',count:5,area:30,adr:55000},{type:'スタンダード',count:3,area:22,adr:42000}],concept:'最上階スイートは山並みの眺望。7F高さと駐車場5台で車ユーザーにも対応',floorRooms:[{f:'1F',use:'ロビー',rooms:[]},{f:'2F',use:'レストラン',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'TW',a:30},{t:'TW',a:30},{t:'SD',a:22}]},{f:'4F',use:'客室',rooms:[{t:'TW',a:30},{t:'SD',a:22},{t:'SD',a:22}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:30},{t:'TW',a:30}]},{f:'6F',use:'客室',rooms:[{t:'PH',a:40},{t:'PH',a:40}]},{f:'7F',use:'オフィス',rooms:[]}]},
+  {id:'e',name:'案E',sub:'6F 高稼働スイート混合',c:C.e,floors:[275,255,210,200,195,185],terraces:[8,10,12,12,15,20],fn:['1F ロビー・カフェ','2F 客室','3F 客室','4F 客室','5F 客室','6F ラウンジ'],h:22,rooms:12,lic:'ホテル',far:98.2,net:1050,total:1320,terr:77,n1f:230,park:3,site:132,ceil:3.5,shadow:'○',coverage:67.6,buildArea:275,uses:{pub:460,guest:805,office:55},adr:56000,
+    roomMix:[{type:'スイート',count:2,area:38,adr:78000},{type:'ツイン',count:6,area:28,adr:55000},{type:'コンパクト',count:4,area:22,adr:40000}],concept:'スイート2室を含む12室で投資効率最大化。6Fラウンジが宿泊体験を底上げ',floorRooms:[{f:'1F',use:'ロビー・カフェ',rooms:[]},{f:'2F',use:'客室',rooms:[{t:'ST',a:38},{t:'TW',a:28},{t:'CP',a:22}]},{f:'3F',use:'客室',rooms:[{t:'TW',a:28},{t:'TW',a:28},{t:'CP',a:22}]},{f:'4F',use:'客室',rooms:[{t:'ST',a:38},{t:'TW',a:28},{t:'CP',a:22}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:28},{t:'TW',a:28},{t:'CP',a:22}]},{f:'6F',use:'ラウンジ',rooms:[]}]},
+  {id:'z',name:'案F',sub:'7F コンパクト多室',c:C.z,floors:[240,220,195,185,175,165,120],terraces:[5,8,10,10,12,15,25],fn:['1F ロビー','2F 客室','3F 客室','4F 客室','5F 客室','6F 客室','7F バー'],h:25,rooms:15,lic:'ホテル',far:95.5,net:980,total:1300,terr:85,n1f:195,park:4,site:167,ceil:3.5,shadow:'△',coverage:59.0,buildArea:240,uses:{pub:360,guest:880,office:60},adr:48000,
+    roomMix:[{type:'ツイン',count:5,area:25,adr:50000},{type:'スタンダード',count:5,area:22,adr:48000},{type:'コンパクト',count:5,area:18,adr:32000}],concept:'最多15室でRevPAR戦略。7Fルーフトップバーが集客装置（比較参考用）',floorRooms:[{f:'1F',use:'ロビー',rooms:[]},{f:'2F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'3F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'4F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'6F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'7F',use:'バー',rooms:[]}]}
+];
+
+/**
+ * USALI準拠 部門別P&L計算
+ * @param {Object} o - Option object
+ * @param {number} [occ] - Occupancy rate override
+ * @returns {Object} Detailed financials
+ */
+function calcFinancials(o, occ) {
+  occ = occ || CONFIG.occupancy;
+  // ── 建設費（躯体＋客室設備） ──
+  const mepCost = o.rooms * CONFIG.mepPerRoom;
+  const buildCost = o.total * CONFIG.costPerSqm + CONFIG.demolitionCost + mepCost;
+  // ── 最上階（オフィス/ショールーム）除外 ──
+  const officeCost = (o.uses.office || 0) * CONFIG.costPerSqm;
+  const hotelBuildCost = buildCost - officeCost;
+  // ── 総事業費 ──
+  const designFee = buildCost * CONFIG.designFeeRate;
+  const ffneInitial = o.rooms * CONFIG.ffnePerRoom;
+  const constructionInterest = buildCost * CONFIG.interestRate * (CONFIG.constructionMonths / 24);
+  const totalProjectCost = buildCost + designFee + ffneInitial + CONFIG.preOpeningCost + CONFIG.permitCost + constructionInterest;
+  // ── ホテル回収対象事業費（オフィス分除外） ──
+  const officeProjectCost = officeCost * (1 + CONFIG.designFeeRate + CONFIG.interestRate * (CONFIG.constructionMonths / 24));
+  const hotelProjectCost = totalProjectCost - officeProjectCost;
+  // ── 収入 ──
+  const guestNights = o.rooms * occ * 365;
+  const roomRev = o.rooms * o.adr * occ * 365;
+  const fbBase = CONFIG.fbBaseMonthly * 12;
+  const fbBreakfast = guestNights * CONFIG.breakfastPrice * CONFIG.breakfastRate;
+  const fbRev = fbBase + fbBreakfast;
+  const otherRev = CONFIG.otherMonthly * 12;
+  const totalRev = roomRev + fbRev + otherRev;
+  // ── 部門別費用(USALI) ──
+  const laborCost = totalRev * CONFIG.opex.labor;
+  const utilityCost = totalRev * CONFIG.opex.utility;
+  const foodCost = fbRev * CONFIG.opex.foodCost;
+  const amenityCost = roomRev * CONFIG.opex.amenity;
+  const salesCost = totalRev * CONFIG.opex.sales;
+  const adminCost = totalRev * CONFIG.opex.admin;
+  const pomCost = totalRev * CONFIG.opex.pom;
+  const systemCost = totalRev * CONFIG.opex.system;
+  const totalOpex = laborCost + utilityCost + foodCost + amenityCost + salesCost + adminCost + pomCost + systemCost;
+  const opexRatio = totalRev > 0 ? totalOpex / totalRev : 0;
+  // ── GOP ──
+  const gop = totalRev - totalOpex;
+  const gopMargin = totalRev > 0 ? gop / totalRev : 0;
+  // ── 固定費（ホテル部分のみ） ──
+  const propertyTax = hotelBuildCost * CONFIG.buildingAssessRate * CONFIG.propertyTaxRate;
+  const ffne = totalRev * CONFIG.ffneRate;
+  const totalFixed = propertyTax + CONFIG.insurance + ffne;
+  // ── NOI ──
+  const noi = gop - totalFixed;
+  // ── 借入返済（ホテル回収対象ベース） ──
+  const debt = hotelProjectCost * CONFIG.loanRatio;
+  const r = CONFIG.interestRate;
+  const n = CONFIG.loanYears;
+  const annualDebt = debt * (r * Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
+  const cashFlow = noi - annualDebt;
+  const payback = noi > 0 ? hotelProjectCost / noi : Infinity;
+  const yieldRate = noi / hotelProjectCost;
+  const revPAR = o.adr * (occ || CONFIG.occupancy);
+  return {
+    buildCost, mepCost, hotelBuildCost, officeCost, totalProjectCost, hotelProjectCost, officeProjectCost,
+    designFee, ffneInitial, constructionInterest,
+    guestNights, revPAR,
+    roomRev, fbRev, fbBase, fbBreakfast, otherRev, totalRev,
+    laborCost, utilityCost, foodCost, amenityCost, salesCost, adminCost, pomCost, systemCost,
+    totalOpex, opexRatio,
+    gop, gopMargin,
+    propertyTax, ffne, totalFixed,
+    noi, debt, annualDebt, cashFlow, payback, yieldRate
+  };
+}
+
+Chart.defaults.color='#6b7394';Chart.defaults.borderColor='rgba(255,255,255,0.04)';Chart.defaults.font.family='Inter,Noto Sans JP';
+
+/** Option Cards */
+!function(){const el=document.getElementById('optCards');O.forEach(o=>{
+const f=calcFinancials(o);
+const d=document.createElement('div');d.className='opt-card';d.dataset.opt=o.id;
+d.innerHTML=`<div class="opt-name" style="color:${o.c.m}">${o.name} ${o.sub}</div><div class="opt-sub">${o.rooms}室・${o.lic}・高さ${o.h}m</div>
+<div class="opt-big">${(o.total+o.terr).toLocaleString()}<span style="font-size:.9rem;font-weight:400;color:var(--dim)"> ㎡</span></div><div class="opt-big-label">実使用面積（延べ床+テラス）</div>
+<div class="opt-stats">
+<div class="opt-stat"><span class="opt-stat-val">${o.n1f}㎡</span><span class="opt-stat-label">1Fネット</span></div>
+<div class="opt-stat"><span class="opt-stat-val">${o.terr}㎡</span><span class="opt-stat-label">テラス</span></div>
+<div class="opt-stat"><span class="opt-stat-val">${o.park}台</span><span class="opt-stat-label">駐車場</span></div>
+<div class="opt-stat"><span class="opt-stat-val">${o.ceil}m</span><span class="opt-stat-label">1F天井高</span></div>
+<div class="opt-stat"><span class="opt-stat-val">${o.coverage.toFixed(1)}%</span><span class="opt-stat-label">建ぺい率</span></div>
+<div class="opt-stat"><span class="opt-stat-val">¥${(o.adr/1000)}k</span><span class="opt-stat-label">ADR</span></div>
+</div>`;el.appendChild(d)})}();
+
+/** Room Mix Comparison */
+!function(){const grid=document.getElementById('roomMixGrid');O.forEach(o=>{
+  const totalArea=o.roomMix.reduce((s,r)=>s+r.count*r.area,0);
+  const wAvgAdr=o.roomMix.reduce((s,r)=>s+r.count*r.adr,0)/o.rooms;
+  let rows=o.roomMix.map(r=>`<div class="rmix-row">
+    <span class="rmix-type" style="color:${o.c.m}">${r.type}</span>
+    <span>${r.area}\u33a1</span>
+    <span>\u00d7${r.count}</span>
+    <span>\u00a5${(r.adr/1000).toFixed(0)}k</span>
+  </div>`).join('');
+  const card=document.createElement('div');card.className='rmix-card';
+  card.innerHTML=`<div class="rmix-card-head"><span style="color:${o.c.m}">${o.name}</span><span style="font-size:.68rem;color:var(--dim)">${o.rooms}\u5ba4</span></div>
+${rows}
+<div class="rmix-footer">
+  <div class="rmix-row" style="border:none"><span>\u5408\u8a08\u5ba2\u5ba4\u9762\u7a4d</span><span>${totalArea}\u33a1</span></div>
+  <div class="rmix-row" style="border:none"><span>\u52a0\u91cd\u5e73\u5747ADR</span><span>\u00a5${Math.round(wAvgAdr).toLocaleString()}</span></div>
+  <div class="rmix-row" style="border:none"><span>1\u5ba4\u3042\u305f\u308a</span><span>${Math.round(totalArea/o.rooms)}\u33a1</span></div>
+</div>
+<div class="rmix-concept">\ud83d\udca1 ${o.concept}</div>`;
+  grid.appendChild(card);
+})}();
+
+/** Floor Room Maps */
+!function(){
+  const grid=document.getElementById('floorMapGrid');
+  const typeNames={GS:'ｸﾞﾗﾝﾄﾞ',ST:'ｽｲｰﾄ',JS:'Jr.ｽｲｰﾄ',CS:'ｺｰﾅｰS',PH:'PH',DX:'DX',DT:'DXﾂｲﾝ',DD:'DXﾀﾞﾌﾞﾙ',TW:'ﾂｲﾝ',SD:'ｽﾀﾝﾀﾞｰﾄﾞ',CP:'ｺﾝﾊﾟｸﾄ',SP:'ｽｰﾍﾟﾘｱ'};
+  O.forEach(o=>{
+    if(!o.floorRooms)return;
+    const card=document.createElement('div');card.className='rmix-card';
+    let html=`<div class="rmix-card-head"><span style="color:${o.c.m}">${o.name}</span><span style="font-size:.68rem;color:var(--dim)">${o.sub}</span></div>`;
+    // Render floors from top to bottom
+    const floors=[...o.floorRooms].reverse();
+    floors.forEach(fl=>{
+      const isRoom=fl.rooms&&fl.rooms.length>0;
+      html+=`<div style="display:flex;align-items:stretch;margin-bottom:2px;min-height:${isRoom?'36px':'26px'}">`;
+      html+=`<div style="width:28px;font-size:.62rem;font-weight:700;color:${isRoom?o.c.m:'var(--dim)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">${fl.f}</div>`;
+      if(isRoom){
+        html+=`<div style="display:flex;gap:2px;flex:1">`;
+        fl.rooms.forEach(r=>{
+          const w=Math.max(r.a/55*100,30);
+          html+=`<div style="flex:${r.a};background:${o.c.bg};border:1px solid ${o.c.m}40;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 3px;min-width:0">`;
+          html+=`<span style="font-size:.56rem;font-weight:600;color:${o.c.m};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center">${typeNames[r.t]||r.t}</span>`;
+          html+=`<span style="font-size:.52rem;color:var(--dim)">${r.a}㎡</span>`;
+          html+=`</div>`;
+        });
+        html+=`</div>`;
+      } else {
+        html+=`<div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:4px;display:flex;align-items:center;justify-content:center;padding:2px">`;
+        html+=`<span style="font-size:.56rem;color:var(--dim)">${fl.use}</span>`;
+        html+=`</div>`;
+      }
+      html+=`</div>`;
+    });
+    // Summary
+    const totalRooms=o.floorRooms.reduce((s,fl)=>s+(fl.rooms?fl.rooms.length:0),0);
+    const guestFloors=o.floorRooms.filter(fl=>fl.rooms&&fl.rooms.length>0).length;
+    html+=`<div class="rmix-footer"><div class="rmix-row" style="border:none"><span>客室階</span><span>${guestFloors}フロア</span></div><div class="rmix-row" style="border:none"><span>合計</span><span>${totalRooms}室</span></div></div>`;
+    card.innerHTML=html;
+    grid.appendChild(card);
+  });
+}();
+
+/** Massing SVG */
+!function(){const row=document.getElementById('massRow');const W=180,H=290,sc=H/27*0.65,by=H-30;
+O.forEach(o=>{const n=o.floors.length;const fh=o.h/n;let rects='',y=by;
+o.floors.forEach((a,i)=>{const w=(a/325)*(W*0.75);const h=fh*sc;y-=h;const x=(W-w)/2;const op=0.45+(i/n)*0.55;
+rects+=`<rect x="${x}" y="${y}" width="${w}" height="${h-2}" rx="3" fill="${o.c.m}" opacity="${op}"/>`;
+if(o.terraces[i]>8){const tw=(o.terraces[i]/50)*18;rects+=`<rect x="${x-tw-1}" y="${y}" width="${tw}" height="${h-2}" rx="2" fill="#22c55e" opacity="0.4"/>`}
+if(i===0)rects+=`<text x="${W/2}" y="${y+h/2+3}" text-anchor="middle" fill="#fff" font-size="8" font-weight="500">${o.fn[i].split(' ')[0]}</text>`;
+});
+const ty=by-(o.h*sc);
+rects+=`<line x1="${W-12}" y1="${by}" x2="${W-12}" y2="${ty}" stroke="${o.c.m}" stroke-width="1" stroke-dasharray="3,2"/>`;
+rects+=`<text x="${W-9}" y="${ty+10}" fill="${o.c.m}" font-size="9" font-weight="700">${o.h}m</text>`;
+const lim=by-(27*sc);
+rects+=`<line x1="8" y1="${lim}" x2="${W-8}" y2="${lim}" stroke="#ef4444" stroke-width=".5" stroke-dasharray="3,3" opacity=".4"/>`;
+rects+=`<text x="10" y="${lim-3}" fill="#ef4444" font-size="7" opacity=".5">27m</text>`;
+rects+=`<line x1="16" y1="${by}" x2="${W-16}" y2="${by}" stroke="var(--dim)" stroke-width=".5"/>`;
+const d=document.createElement('div');d.className='mass-item';
+d.innerHTML=`<div class="mass-label" style="color:${o.c.m}">${o.name} ${o.sub}</div><svg viewBox="0 0 ${W} ${H}" style="max-width:160px">${rects}</svg><div class="mass-sub">${o.total}㎡ + T${o.terr}㎡ = ${o.total+o.terr}㎡</div>`;
+row.appendChild(d)})}();
+
+/** Coverage & FAR Gauges */
+function drawGauge(container,items,max){
+  items.forEach(o=>{
+    const div=document.createElement('div');div.className='gauge-item';
+    const canvas=document.createElement('canvas');canvas.width=100;canvas.height=100;
+    div.appendChild(canvas);
+    const val=container.id==='coverageGauges'?o.coverage:o.far;
+    div.innerHTML+=`<div class="gauge-val" style="color:${o.c.m}">${val.toFixed(1)}%</div><div class="gauge-lbl" style="color:${o.c.m}">${o.name}</div>`;
+    container.appendChild(div);
+    const ctx=canvas.getContext('2d');const cx=50,cy=55,r=38,start=-Math.PI*0.75,end=Math.PI*0.75,range=end-start;
+    ctx.beginPath();ctx.arc(cx,cy,r,start,end);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=8;ctx.lineCap='round';ctx.stroke();
+    const pct=val/max;const vend=start+range*Math.min(pct,1);
+    ctx.beginPath();ctx.arc(cx,cy,r,start,vend);ctx.strokeStyle=o.c.m;ctx.lineWidth=8;ctx.lineCap='round';ctx.stroke();
+    if(max<=100){const lAngle=start+range;ctx.beginPath();ctx.arc(cx,cy,r+6,lAngle-0.02,lAngle+0.02);ctx.strokeStyle='#ef4444';ctx.lineWidth=12;ctx.stroke()}
+  });
+}
+drawGauge(document.getElementById('coverageGauges'),O,80);
+drawGauge(document.getElementById('farGauges'),O,100);
+
+/** Site Plans */
+!function(){const el=document.getElementById('sitePlans');const siteW=20.2,siteD=20.1;
+O.forEach(o=>{const S=160,pad=20,sc=(S-pad*2)/siteW;
+let svg='';
+svg+=`<rect x="${pad}" y="${pad}" width="${siteW*sc}" height="${siteD*sc}" fill="none" stroke="var(--dim)" stroke-width="1" stroke-dasharray="3,2" rx="2"/>`;
+const bW=Math.sqrt(o.buildArea)*1.2,bD=o.buildArea/bW;
+const bx=pad+(siteW*sc-bW*sc)/2,by_=pad+(siteD*sc-bD*sc)/2;
+svg+=`<rect x="${bx}" y="${by_}" width="${bW*sc}" height="${bD*sc}" fill="${o.c.m}" opacity="0.3" stroke="${o.c.m}" stroke-width="1.5" rx="3"/>`;
+svg+=`<text x="${bx+bW*sc/2}" y="${by_+bD*sc/2+3}" text-anchor="middle" fill="${o.c.m}" font-size="9" font-weight="600">${o.buildArea}㎡</text>`;
+const parkW=o.park*2.5,parkD=5.5;
+if(o.park>0){
+  const px=pad+2,py=pad+siteD*sc-parkD*sc-2;
+  svg+=`<rect x="${px}" y="${py}" width="${parkW*sc}" height="${parkD*sc}" fill="rgba(59,130,246,0.2)" stroke="rgba(59,130,246,0.6)" stroke-width="1" rx="2"/>`;
+  svg+=`<text x="${px+parkW*sc/2}" y="${py+parkD*sc/2+3}" text-anchor="middle" fill="rgba(59,130,246,0.8)" font-size="7" font-weight="500">P×${o.park}</text>`;
+}
+svg+=`<text x="${pad+siteW*sc/2}" y="${S-4}" text-anchor="middle" fill="var(--dim)" font-size="7">敷地406.89㎡</text>`;
+const greenArea=406.89-o.buildArea-o.park*13.75;
+svg+=`<text x="${pad+siteW*sc-2}" y="${pad+10}" text-anchor="end" fill="#22c55e" font-size="7">外構${Math.round(greenArea)}㎡</text>`;
+const d=document.createElement('div');d.className='site-plan';
+d.innerHTML=`<svg viewBox="0 0 ${S} ${S}">${svg}</svg><div class="site-plan-label" style="color:${o.c.m}">${o.name}</div><div class="site-plan-sub">建ぺい率 ${o.coverage.toFixed(1)}% / 残余 ${o.site}㎡</div>`;
+el.appendChild(d)})}();
+
+/** Radar */
+new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['実使用面積','1Fパブリック','客室数','テラス','駐車場','日影余裕','コスト効率','インパクト','建ぺい率余裕'],
+datasets:O.map(o=>({label:o.name,data:[(o.total+o.terr)/1480*10,o.n1f/270*10,o.rooms/10*10,o.terr/140*10,o.park/5*10,o.id==='a'?9:o.id==='b'?10:o.id==='g'?7:4,o.id==='a'?9:o.id==='b'?8:o.id==='g'?7:5,o.id==='a'?6:o.id==='b'?8:o.id==='g'?7:10,(80-o.coverage)/80*10],borderColor:o.c.b,backgroundColor:o.c.bg,borderWidth:2,pointRadius:3,pointBackgroundColor:o.c.m}))},
+options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:10,ticks:{display:false},grid:{color:'rgba(255,255,255,0.04)'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:14,font:{size:10}}}}}});
+
+/** Area Chart */
+new Chart(document.getElementById('areaChart'),{type:'bar',data:{labels:O.map(o=>o.name),datasets:[
+{label:'延べ床面積',data:O.map(o=>o.total),backgroundColor:O.map(o=>o.c.bg),borderColor:O.map(o=>o.c.b),borderWidth:1},
+{label:'テラス',data:O.map(o=>o.terr),backgroundColor:'rgba(34,197,94,0.3)',borderColor:'rgba(34,197,94,0.7)',borderWidth:1}]},
+options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,title:{display:true,text:'㎡'}}},
+plugins:{legend:{position:'top',labels:{boxWidth:10,font:{size:10}}}}}});
+
+/** Use Chart */
+new Chart(document.getElementById('useChart'),{type:'bar',data:{labels:O.map(o=>o.name),datasets:[
+{label:'パブリック(1-2F)',data:O.map(o=>o.uses.pub),backgroundColor:'rgba(255,107,138,0.35)',borderColor:'rgba(255,107,138,0.7)',borderWidth:1},
+{label:'客室',data:O.map(o=>o.uses.guest),backgroundColor:'rgba(78,205,196,0.35)',borderColor:'rgba(78,205,196,0.7)',borderWidth:1},
+{label:'オフィス',data:O.map(o=>o.uses.office),backgroundColor:'rgba(255,190,11,0.35)',borderColor:'rgba(255,190,11,0.7)',borderWidth:1}]},
+options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,title:{display:true,text:'㎡'}}},
+plugins:{legend:{position:'top',labels:{boxWidth:10,font:{size:10}}}}}});
+
+/** Efficiency */
+new Chart(document.getElementById('effChart'),{type:'bar',data:{labels:O.map(o=>o.name),datasets:[
+{label:'ネット面積',data:O.map(o=>o.net),backgroundColor:O.map(o=>o.c.bg),borderColor:O.map(o=>o.c.b),borderWidth:1},
+{label:'コア（EV・階段・廊下）',data:O.map(o=>o.total-o.net),backgroundColor:'rgba(255,255,255,0.04)',borderColor:'rgba(255,255,255,0.1)',borderWidth:1}]},
+options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{stacked:true,title:{display:true,text:'㎡'}},y:{stacked:true,grid:{display:false}}},
+plugins:{legend:{position:'top',labels:{boxWidth:10,font:{size:10}}}}}});
+
+/** Construction Cost Cards */
+!function(){const el=document.getElementById('costGrid');
+O.forEach(o=>{
+  const f=calcFinancials(o);
+  const tsubo=o.total/3.30579;
+  const tsuboUnit=f.buildCost/tsubo;
+  const d=document.createElement('div');d.className='rev-card';
+  d.innerHTML=`<div style="color:${o.c.m};font-weight:600;font-size:.85rem">${o.name}</div>
+  <div class="rev-val" style="color:${o.c.m}">¥${(f.buildCost/100000000).toFixed(2)}億</div>
+  <div class="rev-sub">推定建設費（税別）</div>
+  <div style="margin-top:10px;font-size:.72rem;color:var(--dim);text-align:left">
+    延床: ${o.total}㎡ (${tsubo.toFixed(0)}坪)<br>
+    坪単価: ¥${(tsuboUnit/10000).toFixed(0)}万<br>
+    解体費: ¥${(CONFIG.demolitionCost/10000).toLocaleString()}万
+  </div>`;
+  el.appendChild(d)});
+// Cost breakdown bars
+const bd=document.getElementById('costBreakdown');
+O.forEach(o=>{
+  const f=calcFinancials(o);
+  let barHtml=`<div style="margin-top:12px;font-size:.78rem;color:${o.c.m};font-weight:600">${o.name} — ¥${(f.buildCost/100000000).toFixed(1)}億</div><div class="cost-bar-wrap">`;
+  CONFIG.costBreakdown.forEach(c=>{
+    const w=(c.ratio*100).toFixed(1);
+    barHtml+=`<div class="cost-bar-seg" style="flex:${w};background:${c.color}" title="${c.name}: ${w}%">${parseFloat(w)>5?w+'%':''}</div>`;
+  });
+  barHtml+='</div>';
+  bd.innerHTML+=barHtml;
+});
+// Legend
+let leg='<div class="cost-legend">';
+CONFIG.costBreakdown.forEach(c=>{leg+=`<span style="--c:${c.color}"><span style="background:${c.color};display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle"></span>${c.name} ${(c.ratio*100).toFixed(1)}%</span>`});
+leg+='</div>';bd.innerHTML+=leg;
+}();
+
+/** P&L Table — USALI準拠部門別 */
+!function(){const el=document.getElementById('plTable');
+const fins=O.map(o=>calcFinancials(o));
+const yen=v=>'¥'+(v/10000).toFixed(0)+'万';
+const pct=(v,t)=>t>0?((v/t)*100).toFixed(0)+'%':'-';
+const rows=[
+  // ── 売上 ──
+  {l:'【売上】',section:true},
+  {l:'宿泊売上',s:'rooms×ADR×稼働率×365日',k:'roomRev'},
+  {l:'F&B売上',s:'基礎300万/月+朝食連動',k:'fbRev'},
+  {l:'その他収入',s:'物販・イベント',k:'otherRev'},
+  {l:'売上合計',k:'totalRev',cls:'pl-total'},
+  // ── 部門別費用 ──
+  {l:'【運営費(USALI)】',section:true},
+  {l:'人件費',s:CONFIG.opex.labor*100+'%',k:'laborCost',neg:true},
+  {l:'水光熱費',s:CONFIG.opex.utility*100+'%（北海道冬期暖房込）',k:'utilityCost',neg:true},
+  {l:'食材原価',s:'F&B売上の'+CONFIG.opex.foodCost*100+'%',k:'foodCost',neg:true},
+  {l:'消耗品・アメニティ',s:'宿泊売上の'+CONFIG.opex.amenity*100+'%',k:'amenityCost',neg:true},
+  {l:'販売・マーケティング',s:'OTA手数料含'+CONFIG.opex.sales*100+'%',k:'salesCost',neg:true},
+  {l:'一般管理費',s:'会計・法務'+CONFIG.opex.admin*100+'%',k:'adminCost',neg:true},
+  {l:'施設維持管理(POM)',s:CONFIG.opex.pom*100+'%',k:'pomCost',neg:true},
+  {l:'IT・システム',s:'予約/PMS'+CONFIG.opex.system*100+'%',k:'systemCost',neg:true},
+  {l:'運営費合計',k:'totalOpex',neg:true,cls:'pl-total'},
+  // ── GOP ──
+  {l:'GOP（営業総利益）',k:'gop',cls:'pl-total'},
+];
+let html='<div class="pl-row pl-head"><div class="pl-label"></div>';
+O.forEach(o=>{html+=`<div style="color:${o.c.m};text-align:center">${o.name}</div>`});
+html+='</div>';
+rows.forEach(r=>{
+  if(r.section){
+    html+=`<div class="pl-row pl-section"><div class="pl-label">${r.l}</div>`;O.forEach(()=>html+='<div></div>');html+='</div>';
+    return;
+  }
+  html+=`<div class="pl-row ${r.cls||''} ${r.s?'':''}">`;
+  html+=`<div class="pl-label">${r.l}${r.s?'<small>'+r.s+'</small>':''}</div>`;
+  fins.forEach((f,i)=>{
+    const v=r.fixed!==undefined?r.fixed:f[r.k];
+    const color=r.neg?'#ef4444':r.cls==='pl-total'?O[i].c.m:'var(--text)';
+    html+=`<div style="text-align:center;color:${color}">${r.neg?'-':''}${yen(Math.abs(v))}</div>`;
+  });
+  html+='</div>';
+});
+// GOP率表示
+html+='<div class="pl-row" style="margin-top:4px"><div class="pl-label" style="color:var(--dim);font-style:italic">GOP率</div>';
+fins.forEach((f,i)=>{html+=`<div style="text-align:center;color:${f.gopMargin>0.30?'#22c55e':'#ffbe0b'}">${(f.gopMargin*100).toFixed(1)}%</div>`});
+html+='</div>';
+html+='<div class="pl-row"><div class="pl-label" style="color:var(--dim);font-style:italic">OpEx率</div>';
+fins.forEach((f,i)=>{html+=`<div style="text-align:center;color:var(--dim)">${(f.opexRatio*100).toFixed(1)}%</div>`});
+html+='</div>';
+el.innerHTML=html;
+// Evidence box
+const ev=document.getElementById('plEvidence');
+ev.innerHTML=`<div class="evidence-box">
+  <strong>📋 算出根拠（出典）</strong><br>
+  <span class="ev-tag">人件費</span>${CONFIG.sources.labor}<br>
+  <span class="ev-tag">水光熱</span>${CONFIG.sources.utility}<br>
+  <span class="ev-tag">食材原価</span>${CONFIG.sources.foodCost}<br>
+  <span class="ev-tag">稼働率</span>${CONFIG.sources.occupancy}<br>
+  <span class="ev-tag">FF&E</span>${CONFIG.sources.ffne}<br>
+  <span class="ev-tag">固定資産税</span>${CONFIG.sources.tax}<br>
+  <span class="ev-tag">建設費</span>${CONFIG.sources.cost}
+</div>`;
+}();
+
+/** Revenue Cards */
+!function(){const el=document.getElementById('roiGrid');
+O.forEach(o=>{
+  const f=calcFinancials(o);
+  const revPAR=Math.round(o.adr*CONFIG.occupancy);
+  const d=document.createElement('div');d.className='rev-card';
+  d.innerHTML=`<div style="color:${o.c.m};font-weight:600;font-size:.85rem">${o.name}</div>
+  <div class="rev-val" style="color:${o.c.m}">\u00a5${(o.adr/1000)}k</div>
+  <div class="rev-sub">ADR</div>
+  <div style="margin-top:10px;font-size:.72rem;color:var(--dim);text-align:left">
+    RevPAR: \u00a5${(revPAR/1000).toFixed(1)}k<br>
+    \u5e74\u9593\u7dcf\u58f2\u4e0a: \u00a5${(f.totalRev/10000).toFixed(0)}\u4e07<br>
+    GOP: \u00a5${(f.gop/10000).toFixed(0)}\u4e07<br>
+    GOP\u7387: ${(f.gopMargin*100).toFixed(1)}%
+  </div>`;
+  el.appendChild(d)});
+// Evidence
+const ev=document.getElementById('roiEvidence');
+ev.innerHTML=`<div class="evidence-box" style="margin-top:14px">
+  <strong>\ud83d\udca1 \u53ce\u5165\u60f3\u5b9a\u306e\u30dd\u30a4\u30f3\u30c8</strong><br>
+  \u30fbADR\u00a553-74k: \u672d\u5e4c\u30a4\u30f3\u30bf\u30fc\u30b3\u30f3\u30c1\u30cd\u30f3\u30bf\u30eb(2025)ADR\u00a560k+\u3092\u53c2\u8003\u3002\u30d6\u30c6\u30a3\u30c3\u30af\u30e9\u30b0\u30b8\u30e5\u30a2\u30ea\u30fc\u30dd\u30b8\u30b7\u30e7\u30cb\u30f3\u30b0<br>
+  \u30fb\u7a3c\u50cd\u738765%: \u672d\u5e4c\u5e73\u574772%\u3088\u308a\u4fdd\u5b88\u7684\u306a\u5b89\u5b9a\u671f\u60f3\u5b9a<br>
+  \u30fbF&B\u6708\u5546\u00a5350\u4e07: 40\u5e2d\u30ab\u30d5\u30a7\u30fb\u30ec\u30b9\u30c8\u30e9\u30f3\u5e97\u8217\u53ce\u5165<br>
+  \u30fb\u571f\u5730\u53d6\u5f97\u8cbb0\u5186\uff08\u81ea\u793e\u30d3\u30eb\u5efa\u66ff\uff09\u306b\u3088\u308a\u6295\u8cc7\u52b9\u7387\u306f\u76f8\u5bfe\u7684\u306b\u512a\u4f4d
+</div>`;
+}();
+
+/** Sensitivity Heatmap (案A) */
+!function(){const el=document.getElementById('heatmap');
+const adrs=[25000,30000,35000,40000,45000,50000];
+const occs=[0.50,0.60,0.70,0.80,0.90];
+el.style.gridTemplateColumns=`80px repeat(${adrs.length},1fr)`;
+let html='<div class="hm-header"></div>';
+adrs.forEach(a=>{html+=`<div class="hm-header">ADR¥${(a/1000)}k</div>`});
+occs.forEach(oc=>{
+  html+=`<div class="hm-row-label">稼働${(oc*100).toFixed(0)}%</div>`;
+  adrs.forEach(a=>{
+    const tmpO={...O[0],adr:a};
+    const f=calcFinancials(tmpO,oc);
+    const gopM=(f.gop/1000000).toFixed(0);
+    const maxGop=O[0].rooms*50000*0.9*365*(1-0.60);
+    const intensity=Math.max(0,Math.min(1,f.gop/maxGop));
+    const bg=f.gop>0?`rgba(34,197,94,${0.15+intensity*0.55})`:'rgba(239,68,68,0.3)';
+    html+=`<div class="hm-cell" style="background:${bg};color:${f.gop>0?'#fff':'#fca5a5'}">${gopM}</div>`;
+  });
+});
+el.innerHTML=html}();
+
+/** Breakeven Analysis */
+!function(){
+const el=document.getElementById('beChart');
+const note=document.getElementById('beNote');
+let html='';
+// For each option, find breakeven occupancy (cashFlow >= 0)
+O.forEach(o=>{
+  let beOcc=null;
+  for(let oc=0.40;oc<=1.00;oc+=0.005){
+    const f=calcFinancials(o,oc);
+    if(f.cashFlow>=0){beOcc=oc;break;}
+  }
+  const pct=beOcc?(beOcc*100).toFixed(0):'100+';
+  const w=beOcc?Math.min(100,beOcc*100):100;
+  const color=beOcc&&beOcc<=0.75?o.c.m:'#ef4444';
+  const currentPct=CONFIG.occupancy*100;
+  html+=`<div class="be-bar-wrap">
+    <div class="be-bar-label" style="color:${o.c.m}">${o.name}</div>
+    <div class="be-bar-track">
+      <div class="be-bar-fill" style="width:${w}%;background:${color}">${pct}%</div>
+      <div class="be-bar-marker" style="left:${currentPct}%"><div class="be-bar-marker-label" style="left:0">現行${currentPct}%</div></div>
+      <div class="be-bar-marker" style="left:72%;border-style:dashed;opacity:.4"><div class="be-bar-marker-label" style="left:0">札幌平均</div></div>
+    </div>
+  </div>`;
+});
+el.innerHTML=html;
+note.innerHTML=`<div class="evidence-box" style="margin-top:12px">
+  <strong>\u26a0\ufe0f ADR\u00a555-65k\u30fb\u7a3c\u50cd60%\u3067\u306e\u640d\u76ca\u5206\u5c90\u5206\u6790</strong><br>
+  \u2192 \u6848\u03b4\u306f\u640d\u76ca\u5206\u5c90\u7a3c\u50cd\u738771%\u3067\u5b9f\u73fe\u53ef\u80fd\u6027\u6709\u308a\uff08\u672d\u5e4c\u5e73\u574772%\uff09<br>
+  \u2192 \u6848\u03b1\u30fb\u03b3\u306f\u640d\u76ca\u5206\u5c90\u306b78-85%\u306e\u7a3c\u50cd\u304c\u5fc5\u8981\u2192\u9054\u6210\u96e3\u5ea6\u9ad8<br>
+  \u2192 <strong>\u6295\u8cc7\u5224\u65ad\u306e\u30dd\u30a4\u30f3\u30c8\uff1a\u5ba2\u5ba4\u5bc6\u5ea6\uff08\u5ba4\u6570/\u5ef6\u5e8a\uff09\u3068ADR\u306e\u30d0\u30e9\u30f3\u30b9</strong>
+</div>`;
+}();
+
+/** Industry Benchmarks */
+!function(){
+const el=document.getElementById('benchmarks');
+const benchmarks=[
+  {name:'エコノミーホテル',range:[5,8],color:'#6b7394'},
+  {name:'ビジネスホテル',range:[4,6],color:'#4ecdc4'},
+  {name:'アップスケール',range:[3.5,5.5],color:'#ffbe0b'},
+  {name:'ブティック・ラグジュアリー',range:[3,5],color:'#ff6b8a'},
+];
+const currentYields=O.map(o=>calcFinancials(o).yieldRate*100);
+const maxPct=10;
+let html='<div style="margin-bottom:12px;font-size:.72rem;color:var(--dim)">国内ホテル投資 NOI利回り目安（カテゴリ別）</div>';
+benchmarks.forEach(b=>{
+  const left=(b.range[0]/maxPct)*100;
+  const width=((b.range[1]-b.range[0])/maxPct)*100;
+  html+=`<div class="bench-row">
+    <div style="min-width:140px;font-size:.72rem">${b.name}</div>
+    <div class="bench-range">
+      <div class="bench-fill" style="left:${left}%;width:${width}%;background:${b.color};opacity:.5"></div>
+      ${currentYields.map((y,i)=>`<div class="bench-marker" style="left:${(y/maxPct)*100}%;background:${O[i].c.m}" title="${O[i].name}: ${y.toFixed(1)}%"></div>`).join('')}
+    </div>
+    <div style="font-size:.65rem;color:var(--dim);min-width:60px">${b.range[0]}-${b.range[1]}%</div>
+  </div>`;
+});
+html+='<div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap">';
+O.forEach(o=>{html+=`<span style="font-size:.65rem;color:${o.c.m}">| ${o.name} ${(calcFinancials(o).yieldRate*100).toFixed(1)}%</span>`});
+html+='</div>';
+html+=`<div class="evidence-box" style="margin-top:14px">
+  <strong>📊 目標</strong><br>
+  ブティック・ラグジュアリーホテルのNOI利回り目安は<strong style="color:#22c55e">3.0〜5.0%</strong><br>
+  現行1.3-1.8%は目標の半分以下。改善が必要。
+</div>`;
+el.innerHTML=html;
+}();
+
+/** Efficiency Analysis (uses actual CONFIG values) */
+!function(){
+const el=document.getElementById('efficiencyAnalysis');
+const ad=O.map(o=>{
+  const f=calcFinancials(o);
+  return{o,f,cpr:f.totalProjectCost/o.rooms,rd:(o.rooms/o.total*1000).toFixed(2),
+    np:(f.yieldRate*100).toFixed(1),cf:f.cashFlow,
+    gopP:(f.gopMargin*100).toFixed(1),rev:f.totalRev,noi:f.noi};
+}).sort((a,b)=>b.np-a.np);
+const rk=['\ud83e\udd47','\ud83e\udd48','\ud83e\udd49','4\ufe0f\u20e3'];
+const yen=v=>'\u00a5'+(v/10000).toFixed(0)+'\u4e07';
+const R={};
+R['d']=['\u6700\u591a10\u5ba4\u00d7\u5efa\u8a2d\u8cbb\u00a51.17\u5104/\u5ba4(4\u6848\u4e2d\u6700\u4f4e)\u2192\u5ba2\u5ba4\u5bc6\u5ea6\u6700\u9ad8\u3067\u58f2\u4e0a\u898f\u6a21\u6700\u5927','7F=\u9ad8\u3055\u5236\u9650\u30fb\u65e5\u5f71\u898f\u5236\u306e\u4f59\u88d5\u304c\u5c11\u306a\u304f\u5b9f\u73fe\u6027\u8981\u691c\u8a3c'];
+R['b']=['\u6700\u9ad8ADR\u00a565k \u00d7 \u6700\u5c0f\u5ef6\u5e8a1195\u33a1(\u5efa\u8a2d\u8cbb\u00a510.6\u5104=4\u6848\u4e2d\u6700\u4f4e)\u2192\u300c\u9ad8\u5358\u4fa1\u00d7\u4f4e\u30b3\u30b9\u30c8\u300d\u304c\u52b9\u304f','\u30c0\u30d6\u30eb\u30cf\u30a4\u30c81F\u306f\u9762\u7a4d\u52b9\u7387\u4f4e\u4e0b\u3002ADR\u00a565k\u7dad\u6301\u306b\u30c7\u30b6\u30a4\u30f3\u529b\u304c\u9375'];
+R['g']=['9\u5ba4\u3067\u5ba2\u5ba4\u65702\u4f4d\u3060\u304c\u5ef6\u5e8a1340\u33a1\u304c4\u6848\u4e2d\u6700\u5927(\u5efa\u8a2d\u8cbb\u00a511.9\u5104)\u21921\u5ba4\u30b3\u30b9\u30c8\u304c\u6848\u03b4\u3088\u308a\u9ad8\u3044','\u5bb9\u7a4d\u738799.9%\u3067\u307b\u307c\u4e0a\u9650\u3002\u8a2d\u8a08\u5909\u66f4\u306e\u67d4\u8edf\u6027\u304c\u4f4e\u3044'];
+R['a']=['7\u5ba4\u3067\u6848\u03b2\u3068\u540c\u6570\u304b\u3064\u540cADR\u00a565k\u3060\u304c\u5ef6\u5e8a1295\u33a1\u304c\u6848\u03b2\u3088\u308a100\u33a1\u5927\u304d\u304f\u5efa\u8a2d\u8cbb\u5d69\u3080','\u6bb5\u5dee\u578b\u30c7\u30b6\u30a4\u30f3\u306f\u9b45\u529b\u3060\u304c\u5efa\u8a2d\u8cbb\u304c\u6848\u03b2\u3088\u308a\u5927\u304d\u3044\u305f\u3081\u52b9\u7387\u3067\u52a3\u5f8c'];
+// Summary cards for each option
+let h='<div class="scenario-grid" style="margin-bottom:16px">';
+ad.forEach(a=>{
+  const cfC=a.cf>0?'improved':'';
+  h+='<div class="scenario-card '+cfC+'">';
+  h+='<div style="font-weight:700;color:'+a.o.c.m+';margin-bottom:10px;font-size:.9rem">'+a.o.name+' '+a.o.sub+'</div>';
+  const dscr=a.f.annualDebt>0?(a.f.noi/a.f.annualDebt).toFixed(2):'—';
+  const rows=[
+    ['\u7a3c\u50cd\u7387',(CONFIG.occupancy*100)+'%'],
+    ['ADR','\u00a5'+(a.o.adr/1000)+'k'],
+    ['\u4eba\u4ef6\u8cbb\u7387',(CONFIG.opex.labor*100)+'%'],
+    ['F&B\u6708\u5546','\u00a5'+(CONFIG.fbBaseMonthly/10000)+'\u4e07'],
+    ['───','───'],
+    ['\u7dcf\u58f2\u4e0a',yen(a.f.totalRev)],
+    ['GOP',yen(a.f.gop)],
+    ['GOP\u7387',a.gopP+'%'],
+    ['NOI',yen(a.f.noi)],
+    ['NOI\u5229\u56de\u308a',(a.f.yieldRate*100).toFixed(1)+'%'],
+    ['───','───'],
+    ['\u501f\u5165\u984d',yen(a.f.debt)],
+    ['\u5e74\u9593\u8fd4\u6e08',yen(a.f.annualDebt)],
+    ['\u6708\u984d\u8fd4\u6e08','\u00a5'+Math.round(a.f.annualDebt/12).toLocaleString()],
+    ['DSCR',dscr+'x'],
+    ['\u7a0e\u5f15\u524dCF',yen(a.cf)],
+    ['\u2500\u2500\u2500','\u2500\u2500\u2500'],
+    ['RevPAR','\u00a5'+Math.round(a.f.revPAR).toLocaleString()],
+    ['\u5efa\u8a2d\u8cbb\u5408\u8a08',yen(a.f.buildCost)],
+    ['\u3046\u3061\u8a2d\u5099\u8cbb',yen(a.f.mepCost)],
+  ];
+  rows.forEach(([l,v])=>{
+    const isHL=l==='NOI\u5229\u56de\u308a'||l==='\u7a0e\u5f15\u524dCF';
+    const isSep=v==='\u2500\u2500\u2500';
+    let cs='';
+    if(isSep){cs='color:var(--glass-border);font-size:.5rem;padding:1px 0;opacity:.4';}
+    else if(l==='DSCR'){const dv=parseFloat(dscr);cs=dv>=1.2?'color:#22c55e;font-weight:700':'color:#ef4444;font-weight:700';}
+    else if(isHL){cs=a.cf>0?'color:#22c55e;font-weight:700':'color:#ef4444;font-weight:700';}
+    h+='<div class="scenario-row"><span class="sr-label">'+l+'</span><span class="sr-val" style="font-size:.72rem;'+cs+'">'+v+'</span></div>';
+  });
+  h+='</div>';
+});
+h+='</div>';
+// Ranked analysis
+h+='<div style="padding:18px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid var(--glass-border)">';
+h+='<div style="font-weight:700;font-size:.85rem;margin-bottom:12px">\u6295\u8cc7\u52b9\u7387\u30e9\u30f3\u30ad\u30f3\u30b0</div>';
+h+='<div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:6px;font-size:.66rem;font-weight:600;color:var(--dim);padding:4px 8px;border-bottom:1px solid var(--glass-border);margin-bottom:6px">';
+h+='<div>\u9806\u4f4d</div><div>\u5ba2\u5ba4\u5bc6\u5ea6(\u5ba4/1000\u33a1)</div><div>1\u5ba4\u3042\u305f\u308a\u5efa\u8a2d\u8cbb</div><div>NOI\u5229\u56de\u308a</div></div>';
+ad.forEach((a,i)=>{
+  const r=R[a.o.id]||['',''];
+  h+='<div style="padding:12px;margin-bottom:8px;border-radius:8px;border-left:3px solid '+a.o.c.m+';background:rgba(255,255,255,0.015)">';
+  h+='<div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:6px;font-size:.74rem;margin-bottom:8px;align-items:center">';
+  h+='<div>'+rk[i]+' <span style="color:'+a.o.c.m+';font-weight:700">'+a.o.name+'</span></div>';
+  h+='<div>'+a.o.rooms+'\u5ba4/'+a.o.total+'\u33a1 = <strong>'+a.rd+'</strong></div>';
+  h+='<div>\u00a5'+(a.cpr/100000000).toFixed(2)+'\u5104/\u5ba4</div>';
+  const nc=parseFloat(a.np)>3.0?'#22c55e':'#ffbe0b';
+  h+='<div style="color:'+nc+';font-weight:700">'+a.np+'%</div></div>';
+  h+='<div style="font-size:.72rem;line-height:1.6">';
+  h+='<span style="color:#22c55e;font-weight:600">\u25b2 \u5f37\u307f:</span> '+r[0]+'<br>';
+  h+='<span style="color:#ffbe0b;font-weight:600">\u26a0 \u7559\u610f:</span> '+r[1]+'</div></div>';
+});
+h+='<div style="margin-top:10px;padding:10px 14px;border-radius:8px;background:rgba(34,197,94,0.06);font-size:.74rem;line-height:1.6">';
+h+='<strong style="color:#22c55e">\ud83d\udca1 \u7d50\u8ad6:</strong> ';
+h+='\u6295\u8cc7\u52b9\u7387\u306e\u672c\u8cea\u306f<strong>\u300c1\u5ba4\u3042\u305f\u308a\u306e\u5efa\u8a2d\u8cbb\u3092\u3044\u304b\u306b\u6291\u3048\u3001ADR\u3092\u3044\u304b\u306b\u9ad8\u304f\u3059\u308b\u304b\u300d</strong>\u306b\u96c6\u7d04\u3055\u308c\u308b\u3002<br>';
+h+='\u30fb\u6848\u03b4\u306f\u5ba2\u5ba4\u6570\u306e\u591a\u3055\u30671\u5ba4\u3042\u305f\u308a\u30b3\u30b9\u30c8\u3092\u8584\u3081\u3001\u6848\u03b2\u306fADR\u306e\u9ad8\u3055\u3068\u5ef6\u5e8a\u306e\u5c0f\u3055\u3055\u3067\u52b9\u7387UP<br>';
+h+='\u30fb\u6848\u03b1\u30fb\u03b3\u306f\u5efa\u8a2d\u8cbb\u304c\u76f8\u5bfe\u7684\u306b\u5927\u304d\u3044\u305f\u3081\u52b9\u7387\u3067\u52a3\u5f8c';
+h+='</div></div>';
+// Evidence box
+h+='<div class="evidence-box" style="margin-top:14px">';
+h+='<strong>\ud83d\udcca \u524d\u63d0\u6761\u4ef6\u3068\u6839\u62e0</strong><br>';
+h+='<span class="ev-tag">ADR\u00a555-65k</span>\u672d\u5e4c\u30a4\u30f3\u30bf\u30fc\u30b3\u30f3\u30c1\u30cd\u30f3\u30bf\u30eb(2025)ADR\u00a560k+\u3001\u30d6\u30c6\u30a3\u30c3\u30af\u30e9\u30b0\u30b8\u30e5\u30a2\u30ea\u30fc\u30dd\u30b8\u30b7\u30e7\u30cb\u30f3\u30b0<br>';
+h+='<span class="ev-tag">\u7a3c\u50cd\u738760%</span>\u958b\u696d\u521d\u671f\u542b\u3080\u5b89\u5b9a\u671f\u4fdd\u5b88\u60f3\u5b9a\uff08\u672d\u5e4c\u5e73\u574772%\u3088\u308a\u4f4e\u3081\uff09<br>';
+h+='<span class="ev-tag">\u4eba\u4ef6\u8cbb30%</span>\u65e5\u672c\u65c5\u9928\u5354\u4f1a(2023)\u30db\u30c6\u30eb\u5e73\u574729.7%\u3002\u5c0f\u898f\u6a21\u30d6\u30c6\u30a3\u30c3\u30af\u3067\u306f\u59a5\u5f53<br>';
+h+='<span class="ev-tag">F&B\u6708\u5546\u00a5350\u4e07</span>40\u5e2d\u30ab\u30d5\u30a7: L\u00a51,500\u00d725\u5e2d\u00d725\u65e5 + D\u00a55,000\u00d720\u5e2d\u00d720\u65e5 + \u30c9\u30ea\u30f3\u30af\u00a550\u4e07<br>';
+h+='<span class="ev-tag">\u671d\u98df\u00a53,000</span>\u30d6\u30c6\u30a3\u30c3\u30af\u30db\u30c6\u30eb\u6c34\u6e96\u3002\u55ab\u98df\u738770%\u60f3\u5b9a';
+h+='</div>';
+el.innerHTML=h;
+}();
+
+/** Interactive Reverse Calculator */
+!function(){
+  const adrEl=document.getElementById('simAdr'),roomsEl=document.getElementById('simRooms'),occEl=document.getElementById('simOcc');
+  const adrValEl=document.getElementById('simAdrVal'),roomsValEl=document.getElementById('simRoomsVal'),occValEl=document.getElementById('simOccVal');
+  const resEl=document.getElementById('simResults'),cmpEl=document.getElementById('simCompare');
+  /**
+   * Solve for max hotelBuildCost given target NOI yield.
+   * Office floor (~150㎡) is excluded from hotel investment base.
+   * B = hotelBuildCost (excluding office floor)
+   * fixedBcoeff applied only to B (hotel portion)
+   * T_hotel = B * k1 + constT (hotel project cost)
+   * @param {number} adr - Average daily rate
+   * @param {number} rooms - Number of rooms
+   * @param {number} occ - Occupancy rate (0-1)
+   * @param {number} targetYield - Target NOI yield (0-1), or null for CF breakeven
+   * @returns {Object} Reverse-calculated results
+   */
+  const OFFICE_AREA = 150; // 最上階オフィス想定面積(㎡)
+  function solve(adr,rooms,occ,targetYield){
+    const C=CONFIG;
+    const gn=rooms*occ*365;
+    const roomRev=rooms*adr*occ*365;
+    const fbBase=C.fbBaseMonthly*12;
+    const fbBk=gn*C.breakfastPrice*C.breakfastRate;
+    const fbRev=fbBase+fbBk;
+    const otherRev=C.otherMonthly*12;
+    const totalRev=roomRev+fbRev+otherRev;
+    const laborC=totalRev*C.opex.labor;
+    const utilC=totalRev*C.opex.utility;
+    const foodC=fbRev*C.opex.foodCost;
+    const amenC=roomRev*C.opex.amenity;
+    const salesC=totalRev*C.opex.sales;
+    const adminC=totalRev*C.opex.admin;
+    const pomC=totalRev*C.opex.pom;
+    const sysC=totalRev*C.opex.system;
+    const totalOpex=laborC+utilC+foodC+amenC+salesC+adminC+pomC+sysC;
+    const gop=totalRev-totalOpex;
+    const fixedConst=C.insurance+totalRev*C.ffneRate;
+    const fixedBcoeff=C.buildingAssessRate*C.propertyTaxRate;
+    const k1=1+C.designFeeRate+C.interestRate*(C.constructionMonths/24);
+    const mepCost=rooms*C.mepPerRoom;
+    const constT=rooms*C.ffnePerRoom+C.preOpeningCost+C.permitCost+mepCost;
+    // B = hotelBuildCost (excluding office floor)
+    // totalBuildCost = B + officeCost
+    const officeCost=OFFICE_AREA*C.costPerSqm;
+    let B,T;
+    if(targetYield===null){
+      const r=C.interestRate,n=C.loanYears;
+      const pmtFactor=r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+      const debtCoeff=C.loanRatio*pmtFactor;
+      const numerator=gop-fixedConst-debtCoeff*constT;
+      const denominator=fixedBcoeff+debtCoeff*k1;
+      B=numerator/denominator;
+      T=B*k1+constT;
+    } else {
+      const numerator=gop-fixedConst-targetYield*constT;
+      const denominator=fixedBcoeff+targetYield*k1;
+      B=numerator/denominator;
+      T=B*k1+constT;
+    }
+    const totalB=B+officeCost; // 全体建設費（オフィス含む）
+    const tsubo=totalB>0?totalB/((1320)/3.30579):0;
+    return {hotelBuildCost:B,totalBuildCost:totalB,hotelProjectCost:T,tsuboUnit:tsubo,feasible:B>0,gop,totalRev,officeCost};
+  }
+  function fmt(v){return v<=0?'N/A':'\u00a5'+(v/100000000).toFixed(2)+'\u5104';}
+  function fmtT(v){return v<=0?'-':(v/10000).toFixed(0)+'\u4e07/\u576A';}
+  const noteEl=document.getElementById('simRoomNote');
+  function update(){
+    const adr=+adrEl.value,rooms=+roomsEl.value,occ=+occEl.value/100;
+    adrValEl.textContent='\u00a5'+adr.toLocaleString();
+    roomsValEl.textContent=rooms+'\u5ba4';
+    occValEl.textContent=Math.round(occ*100)+'%';
+    // Room area context note
+    const guestArea=Math.round(800/Math.max(rooms,1));
+    const avgRoomSize=Math.round(guestArea*0.65);
+    let rn='\ud83d\udccf \u5ba2\u5ba4\u30a8\u30ea\u30a2\u7d04800\u33a1\u60f3\u5b9a \u2192 '+rooms+'\u5ba4\u306e\u5834\u5408: \u5e73\u5747\u7d04'+avgRoomSize+'\u33a1/\u5ba4';
+    if(avgRoomSize>=40) rn+=' (\u30b9\u30a4\u30fc\u30c8\u30af\u30e9\u30b9\u3002ADR\u00a570k-100k\u76f8\u5f53)';
+    else if(avgRoomSize>=30) rn+=' (\u30c7\u30e9\u30c3\u30af\u30b9\u30c4\u30a4\u30f3\u3002ADR\u00a550k-70k\u76f8\u5f53)';
+    else if(avgRoomSize>=23) rn+=' (\u30b9\u30bf\u30f3\u30c0\u30fc\u30c9\u30c4\u30a4\u30f3\u3002ADR\u00a540k-55k\u76f8\u5f53)';
+    else rn+=' (\u30b3\u30f3\u30d1\u30af\u30c8\u3002ADR\u00a530k-45k\u76f8\u5f53)';
+    noteEl.textContent=rn;
+    const targets=[
+      {label:'CF\u640d\u76ca\u5206\u5c90',yield:null,icon:'\u26a0\ufe0f'},
+      {label:'NOI 3.0%',yield:0.03,icon:'\ud83d\udfe1'},
+      {label:'NOI 4.0%',yield:0.04,icon:'\ud83d\udfe2'},
+      {label:'NOI 5.0%',yield:0.05,icon:'\ud83d\udfe2'}
+    ];
+    let rhtml='';
+    targets.forEach(t=>{
+      const r=solve(adr,rooms,occ,t.yield);
+      const cls=!r.feasible?'red':r.tsuboUnit>2500000?'green':r.tsuboUnit>2000000?'yellow':'red';
+      rhtml+=`<div class="sim-card ${cls}">
+        <div class="sim-card-title">${t.icon} ${t.label}</div>
+        <div class="sim-card-value">${fmt(r.totalBuildCost)}</div>
+        <div class="sim-card-sub">\u5efa\u8a2d\u8cbb\u576A\u5358\u4fa1: ${r.feasible?fmtT(r.tsuboUnit):'N/A'}</div>
+        <div style="font-size:.62rem;color:var(--dim);margin-top:2px">\u30db\u30c6\u30eb\u56de\u53ce\u5bfe\u8c61: ${fmt(r.hotelBuildCost)}</div>
+      </div>`;
+    });
+    resEl.innerHTML=rhtml;
+    // Revenue summary
+    const s0=solve(adr,rooms,occ,null);
+    let chtml=`<div style="margin-bottom:12px;font-size:.78rem"><strong>\u53ce\u5165\u6982\u7b97</strong>\u3000\u5e74\u9593\u58f2\u4e0a: \u00a5${(s0.totalRev/10000).toFixed(0)}\u4e07 \u3000GOP: \u00a5${(s0.gop/10000).toFixed(0)}\u4e07 (${(s0.gop/s0.totalRev*100).toFixed(1)}%)</div>`;
+    chtml+=`<div style="font-size:.72rem;color:#a78bfa;margin-bottom:8px">\ud83c\udfe2 \u6700\u4e0a\u968e\u30aa\u30d5\u30a3\u30b9(${OFFICE_AREA}\u33a1)\u306e\u5efa\u8a2d\u8cbb\u00a5${(s0.officeCost/10000).toFixed(0)}\u4e07\u3092\u30db\u30c6\u30eb\u56de\u53ce\u5bfe\u8c61\u304b\u3089\u9664\u5916\u6e08\u307f</div>`;
+    chtml+='<div style="font-size:.72rem;color:var(--dim);margin-bottom:8px">\u5404\u6848\u306e\u30db\u30c6\u30eb\u5efa\u8a2d\u8cbb vs CF\u640d\u76ca\u5206\u5c90\u306e\u8a31\u5bb9\u30db\u30c6\u30eb\u5efa\u8a2d\u8cbb</div>';
+    const cfResult=solve(adr,rooms,occ,null);
+    // ホテル部分の建設費で比較（オフィス分除外）
+    const maxB=Math.max(cfResult.hotelBuildCost,...O.map(o=>(o.total-(o.uses.office||0))*CONFIG.costPerSqm+CONFIG.demolitionCost+o.rooms*CONFIG.mepPerRoom))*1.1;
+    O.forEach(o=>{
+      const actualB=(o.total-(o.uses.office||0))*CONFIG.costPerSqm+CONFIG.demolitionCost+o.rooms*CONFIG.mepPerRoom;
+      const pctActual=Math.max(0,Math.min(100,(actualB/maxB)*100));
+      const pctAllow=cfResult.feasible?Math.max(0,Math.min(100,(cfResult.hotelBuildCost/maxB)*100)):0;
+      const over=actualB>cfResult.hotelBuildCost;
+      chtml+=`<div class="sim-opt-row">
+        <div class="sim-opt-dot" style="background:${o.c.m}"></div>
+        <div class="sim-opt-name" style="color:${o.c.m}">${o.name}</div>
+        <div class="sim-opt-bar">
+          <div class="sim-opt-fill" style="width:${pctActual}%;background:${over?'#ef4444':o.c.m};opacity:0.6"></div>
+          ${cfResult.feasible?`<div style="position:absolute;left:${pctAllow}%;top:-2px;width:2px;height:12px;background:#22c55e;border-radius:1px" title="\u8a31\u5bb9\u4e0a\u9650"></div>`:''}
+        </div>
+        <div class="sim-opt-val" style="color:${over?'#ef4444':'#22c55e'}">\u00a5${(actualB/100000000).toFixed(1)}\u5104 ${over?'\u2716':'\u2714'}</div>
+      </div>`;
+    });
+    if(cfResult.feasible){
+      chtml+=`<div style="margin-top:8px;font-size:.68rem;color:var(--dim)">\ud83d\udfe2 \u7dd1\u7dda = CF\u640d\u76ca\u5206\u5c90\u306e\u8a31\u5bb9\u30db\u30c6\u30eb\u5efa\u8a2d\u8cbb\u4e0a\u9650 (\u00a5${(cfResult.hotelBuildCost/100000000).toFixed(2)}\u5104)\u3000\u8d64\u30d0\u30fc = \u5b9f\u969b\u306e\u30db\u30c6\u30eb\u5efa\u8a2d\u8cbb\u304c\u8a31\u5bb9\u3092\u8d85\u904e</div>`;
+    }
+    cmpEl.innerHTML=chtml;
+  }
+  adrEl.addEventListener('input',update);
+  roomsEl.addEventListener('input',update);
+  occEl.addEventListener('input',update);
+  update(); // Initial render
+}();
+
+
+/** Comparison Table */
+!function(){const rows=[
+['延べ床面積',o=>o.total+'㎡',o=>o.total,'max'],['テラス',o=>o.terr+'㎡',o=>o.terr,'max'],
+['実使用面積',o=>(o.total+o.terr)+'㎡',o=>o.total+o.terr,'max'],['客室数',o=>o.rooms+'室',o=>o.rooms,'max'],
+['営業種別',o=>o.lic,null,null],['1Fネット',o=>o.n1f+'㎡',o=>o.n1f,'max'],['1F天井高',o=>o.ceil+'m',o=>o.ceil,'max'],
+['建ぺい率',o=>o.coverage.toFixed(1)+'%',null,null],['容積率使用',o=>o.far+'%',null,null],
+['駐車台数',o=>o.park+'台',o=>o.park,'max'],['敷地残余',o=>o.site+'㎡',o=>o.site,'max'],
+['高さ',o=>o.h+'m',null,null],['日影余裕',o=>o.shadow,null,null],
+['ADR',o=>'¥'+(o.adr/1000)+'k',o=>o.adr,'max'],
+['想定RevPAR',o=>'¥'+Math.round(o.adr*CONFIG.occupancy/1000)+'k',o=>o.adr*CONFIG.occupancy,'max']];
+let html='<thead><tr><th></th>';O.forEach(o=>html+=`<th style="color:${o.c.m}">${o.name}<br><small style="font-weight:400">${o.sub}</small></th>`);
+html+='</tr></thead><tbody>';rows.forEach(([l,fmt,vf,m])=>{html+=`<tr><td>${l}</td>`;const vs=O.map(o=>vf?vf(o):null);const best=m==='max'?Math.max(...vs.filter(v=>v!==null)):m==='min'?Math.min(...vs.filter(v=>v!==null)):null;
+O.forEach((o,i)=>{const ib=best!==null&&vs[i]===best;html+=`<td class="${ib?'hi':''}">${fmt(o)}</td>`});html+='</tr>'});
+html+='</tbody>';document.getElementById('compTbl').innerHTML=html}();
+</script>
+</body>
+</html>
