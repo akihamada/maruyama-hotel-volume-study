@@ -98,21 +98,19 @@ table th:last-child { text-align:right; }
     <div class="card-title"><span class="icon">🏗️</span> 建設単価の根拠</div>
     <table>
       <tr><th>項目</th><th>数値</th></tr>
-      <tr><td>坪単価 <span class="source">（松井建設 2025.10 高岡RC6Fホテル実績）</span></td><td class="val">290万円/坪</td></tr>
-      <tr><td>㎡単価 <span class="source">（290万÷3.30579㎡/坪）</span></td><td class="val">¥878,000/㎡</td></tr>
+      <tr><td>坪単価 <span class="source">（建設会社見積ベース）</span></td><td class="val">200万円/坪</td></tr>
+      <tr><td>㎡単価 <span class="source">（200万÷3.30579㎡/坪）</span></td><td class="val">¥605,000/㎡</td></tr>
       <tr><td>客室MEP設備費 <span class="source">（UB・給排水・空調・電気・防災・電子錠）</span></td><td class="val">¥250万/室</td></tr>
       <tr><td>既存建物解体費</td><td class="val">¥1,500万</td></tr>
     </table>
     <div class="note">
       <strong>📌 坪単価の算出根拠：</strong><br>
-      ① 松井建設 実績見積（2025年10月 高岡RC6Fホテル）＝ <strong>302万/坪</strong><br>
-      ② archi-book 2025年 北海道RC予測単価  ＝ <strong>281万/坪</strong><br>
-      → 両者の平均値として札幌RC想定 <strong>290万円/坪</strong> を採用。<br>
+      建設会社からの見積もりに基づき、札幌RC造ホテル想定 <strong>200万円/坪</strong> を採用。<br>
       室数が多い案ほどMEP設備費が加算され、建設費が高くなる仕組みです。
     </div>
     <div class="formula">
       <span class="label">建設費 計算式：</span>
-      建設費 = 延べ床面積 × ¥878,000/㎡ + 客室数 × ¥250万/室 + 解体費 ¥1,500万
+      建設費 = 延べ床面積 × ¥605,000/㎡ + 客室数 × ¥250万/室 + 解体費 ¥1,500万
     </div>
   </div>
   
@@ -148,7 +146,7 @@ table th:last-child { text-align:right; }
     <div class="card-title"><span class="icon">💎</span> 事業費の内訳</div>
     <table>
       <tr><th>費目</th><th>算出方法</th></tr>
-      <tr><td>建設費（本体）</td><td>延べ床面積 × ¥878k/㎡ + 解体費 + MEP設備費</td></tr>
+      <tr><td>建設費（本体）</td><td>延べ床面積 × ¥605k/㎡ + 解体費 + MEP設備費</td></tr>
       <tr><td>設計監理費 <span class="tag">12%</span></td><td>建設費 × 12% <span class="source">【国交省告示基準】</span></td></tr>
       <tr><td>FF&E初期購入 <span class="tag">¥800万/室</span></td><td>客室数 × ¥800万 <span class="source">（ブティックホテル水準）</span></td></tr>
       <tr><td>開業準備費</td><td>¥500万 <span class="source">（採用・研修・マーケティング）</span></td></tr>
