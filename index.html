@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>円山ホテル ボリュームスタディ</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -256,17 +257,17 @@ footer{text-align:center;padding:48px 0;color:var(--dim);font-size:.75rem;border
   </div>
 </div>
 
-<!-- Coverage & FAR Gauges -->
+<!-- Coverage & FAR Charts -->
 <div class="section">
   <div class="section-title">建ぺい率・容積率使用率</div>
   <div class="g2">
     <div class="card">
       <div class="card-head">建ぺい率（建築面積 / 敷地面積）上限 80%</div>
-      <div class="gauge-row" id="coverageGauges"></div>
+      <div class="chart-box" style="height:220px"><canvas id="coverageChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-head">容積率使用率（容積対象 / 1,220.7㎡）上限 300%</div>
-      <div class="gauge-row" id="farGauges"></div>
+      <div class="card-head">容積率使用率（容積対象面積 / 容積率上限面積 1,220.7㎡）</div>
+      <div class="chart-box" style="height:220px"><canvas id="farChart"></canvas></div>
     </div>
   </div>
 </div>
@@ -503,10 +504,10 @@ const O=[
     roomMix:[{type:'コーナースイート',count:2,area:42,adr:78000},{type:'デラックスツイン',count:4,area:40,adr:62000},{type:'デラックスダブル',count:6,area:40,adr:55000}],concept:'全室40㎡均一で運営効率最大化。清掃・備品・施工の標準化でコスト削減。均質な上質体験',floorRooms:[{f:'1F',use:'ロビー・カフェ',rooms:[]},{f:'2F',use:'客室',rooms:[{t:'CS',a:42},{t:'DT',a:40},{t:'DD',a:40}]},{f:'3F',use:'客室',rooms:[{t:'DT',a:40},{t:'DT',a:40},{t:'DD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'CS',a:42},{t:'DD',a:40},{t:'DD',a:40}]},{f:'5F',use:'客室',rooms:[{t:'DT',a:40},{t:'DD',a:40},{t:'DD',a:40}]},{f:'6F',use:'オフィス',rooms:[]}]},
   {id:'d',name:'案D',sub:'7F 眺望タワー',c:C.d,floors:[245,230,195,180,165,155,145],terraces:[10,10,15,15,20,25,40],fn:['1F ロビー','2F レストラン','3F 客室','4F 客室','5F 客室','6F 客室','7F オフィス'],h:25,rooms:10,lic:'ホテル',far:96.9,net:1000,total:1315,terr:135,n1f:200,park:5,site:162,ceil:4.0,shadow:'△',coverage:60.2,buildArea:245,uses:{pub:475,guest:695,office:145},adr:58000,
     roomMix:[{type:'ペントハウススイート',count:2,area:40,adr:85000},{type:'ツイン',count:5,area:30,adr:55000},{type:'スタンダード',count:3,area:22,adr:42000}],concept:'最上階スイートは山並みの眺望。7F高さと駐車場5台で車ユーザーにも対応',floorRooms:[{f:'1F',use:'ロビー',rooms:[]},{f:'2F',use:'レストラン',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'TW',a:30},{t:'TW',a:30},{t:'SD',a:22}]},{f:'4F',use:'客室',rooms:[{t:'TW',a:30},{t:'SD',a:22},{t:'SD',a:22}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:30},{t:'TW',a:30}]},{f:'6F',use:'客室',rooms:[{t:'PH',a:40},{t:'PH',a:40}]},{f:'7F',use:'オフィス',rooms:[]}]},
-  {id:'e',name:'案E',sub:'6F 高稼働スイート混合',c:C.e,floors:[275,255,210,200,195,185],terraces:[8,10,12,12,15,20],fn:['1F ロビー・カフェ','2F 客室','3F 客室','4F 客室','5F 客室','6F ラウンジ'],h:22,rooms:12,lic:'ホテル',far:98.2,net:1050,total:1320,terr:77,n1f:230,park:3,site:132,ceil:3.5,shadow:'○',coverage:67.6,buildArea:275,uses:{pub:460,guest:805,office:55},adr:56000,
-    roomMix:[{type:'スイート',count:2,area:38,adr:78000},{type:'ツイン',count:6,area:28,adr:55000},{type:'コンパクト',count:4,area:22,adr:40000}],concept:'スイート2室を含む12室で投資効率最大化。6Fラウンジが宿泊体験を底上げ',floorRooms:[{f:'1F',use:'ロビー・カフェ',rooms:[]},{f:'2F',use:'客室',rooms:[{t:'ST',a:38},{t:'TW',a:28},{t:'CP',a:22}]},{f:'3F',use:'客室',rooms:[{t:'TW',a:28},{t:'TW',a:28},{t:'CP',a:22}]},{f:'4F',use:'客室',rooms:[{t:'ST',a:38},{t:'TW',a:28},{t:'CP',a:22}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:28},{t:'TW',a:28},{t:'CP',a:22}]},{f:'6F',use:'ラウンジ',rooms:[]}]},
-  {id:'z',name:'案F',sub:'7F コンパクト多室',c:C.z,floors:[240,220,195,185,175,165,120],terraces:[5,8,10,10,12,15,25],fn:['1F ロビー','2F 客室','3F 客室','4F 客室','5F 客室','6F 客室','7F バー'],h:25,rooms:15,lic:'ホテル',far:95.5,net:980,total:1300,terr:85,n1f:195,park:4,site:167,ceil:3.5,shadow:'△',coverage:59.0,buildArea:240,uses:{pub:360,guest:880,office:60},adr:48000,
-    roomMix:[{type:'ツイン',count:5,area:25,adr:50000},{type:'スタンダード',count:5,area:22,adr:48000},{type:'コンパクト',count:5,area:18,adr:32000}],concept:'最多15室でRevPAR戦略。7Fルーフトップバーが集客装置（比較参考用）',floorRooms:[{f:'1F',use:'ロビー',rooms:[]},{f:'2F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'3F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'4F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'6F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'7F',use:'バー',rooms:[]}]}
+  {id:'e',name:'案E',sub:'6F スイート混合',c:C.e,floors:[275,255,210,200,195,185],terraces:[8,10,12,12,15,20],fn:['1F ロビー・カフェ','2F ギャラリー・ライブラリー','3F 客室','4F 客室','5F 客室','6F ラウンジ'],h:22,rooms:9,lic:'ホテル',far:98.2,net:1050,total:1320,terr:77,n1f:230,park:3,site:132,ceil:3.5,shadow:'○',coverage:67.6,buildArea:275,uses:{pub:660,guest:605,office:55},adr:56000,
+    roomMix:[{type:'スイート',count:2,area:38,adr:78000},{type:'ツイン',count:4,area:28,adr:55000},{type:'コンパクト',count:3,area:22,adr:40000}],concept:'2Fギャラリー＆ライブラリーで文化発信。スイート2室含む9室＋6Fラウンジ',floorRooms:[{f:'1F',use:'ロビー・カフェ',rooms:[]},{f:'2F',use:'ギャラリー・ライブラリー',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:38},{t:'TW',a:28},{t:'CP',a:22}]},{f:'4F',use:'客室',rooms:[{t:'ST',a:38},{t:'TW',a:28},{t:'CP',a:22}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:28},{t:'TW',a:28},{t:'CP',a:22}]},{f:'6F',use:'ラウンジ',rooms:[]}]},
+  {id:'z',name:'案F',sub:'7F コンパクト多室',c:C.z,floors:[240,220,195,185,175,165,120],terraces:[5,8,10,10,12,15,25],fn:['1F ロビー','2F ギャラリー・イベントスペース','3F 客室','4F 客室','5F 客室','6F 客室','7F バー'],h:25,rooms:12,lic:'ホテル',far:95.5,net:980,total:1300,terr:85,n1f:195,park:4,site:167,ceil:3.5,shadow:'△',coverage:59.0,buildArea:240,uses:{pub:580,guest:660,office:60},adr:48000,
+    roomMix:[{type:'ツイン',count:4,area:25,adr:50000},{type:'スタンダード',count:4,area:22,adr:48000},{type:'コンパクト',count:4,area:18,adr:32000}],concept:'2Fギャラリー＆イベント空間で集客。12室コンパクト多室＋7Fルーフトップバー',floorRooms:[{f:'1F',use:'ロビー',rooms:[]},{f:'2F',use:'ギャラリー・イベントスペース',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'4F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'6F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'7F',use:'バー',rooms:[]}]}
 ];
 
 /**
@@ -660,8 +661,8 @@ ${rows}
   });
 }();
 
-/** Massing SVG */
-!function(){const row=document.getElementById('massRow');const W=180,H=290,sc=H/27*0.65,by=H-30;
+/** Massing SVG - all options aligned to same ground line */
+!function(){const row=document.getElementById('massRow');const W=180,H=290,maxH=27,sc=H/maxH*0.65,by=H-30;
 O.forEach(o=>{const n=o.floors.length;const fh=o.h/n;let rects='',y=by;
 o.floors.forEach((a,i)=>{const w=(a/325)*(W*0.75);const h=fh*sc;y-=h;const x=(W-w)/2;const op=0.45+(i/n)*0.55;
 rects+=`<rect x="${x}" y="${y}" width="${w}" height="${h-2}" rx="3" fill="${o.c.m}" opacity="${op}"/>`;
@@ -671,32 +672,17 @@ if(i===0)rects+=`<text x="${W/2}" y="${y+h/2+3}" text-anchor="middle" fill="#fff
 const ty=by-(o.h*sc);
 rects+=`<line x1="${W-12}" y1="${by}" x2="${W-12}" y2="${ty}" stroke="${o.c.m}" stroke-width="1" stroke-dasharray="3,2"/>`;
 rects+=`<text x="${W-9}" y="${ty+10}" fill="${o.c.m}" font-size="9" font-weight="700">${o.h}m</text>`;
-const lim=by-(27*sc);
+const lim=by-(maxH*sc);
 rects+=`<line x1="8" y1="${lim}" x2="${W-8}" y2="${lim}" stroke="#ef4444" stroke-width=".5" stroke-dasharray="3,3" opacity=".4"/>`;
-rects+=`<text x="10" y="${lim-3}" fill="#ef4444" font-size="7" opacity=".5">27m</text>`;
+rects+=`<text x="10" y="${lim-3}" fill="#ef4444" font-size="7" opacity=".5">${maxH}m</text>`;
 rects+=`<line x1="16" y1="${by}" x2="${W-16}" y2="${by}" stroke="var(--dim)" stroke-width=".5"/>`;
 const d=document.createElement('div');d.className='mass-item';
 d.innerHTML=`<div class="mass-label" style="color:${o.c.m}">${o.name} ${o.sub}</div><svg viewBox="0 0 ${W} ${H}" style="max-width:160px">${rects}</svg><div class="mass-sub">${o.total}㎡ + T${o.terr}㎡ = ${o.total+o.terr}㎡</div>`;
 row.appendChild(d)})}();
 
-/** Coverage & FAR Gauges */
-function drawGauge(container,items,max){
-  items.forEach(o=>{
-    const div=document.createElement('div');div.className='gauge-item';
-    const canvas=document.createElement('canvas');canvas.width=100;canvas.height=100;
-    div.appendChild(canvas);
-    const val=container.id==='coverageGauges'?o.coverage:o.far;
-    div.innerHTML+=`<div class="gauge-val" style="color:${o.c.m}">${val.toFixed(1)}%</div><div class="gauge-lbl" style="color:${o.c.m}">${o.name}</div>`;
-    container.appendChild(div);
-    const ctx=canvas.getContext('2d');const cx=50,cy=55,r=38,start=-Math.PI*0.75,end=Math.PI*0.75,range=end-start;
-    ctx.beginPath();ctx.arc(cx,cy,r,start,end);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=8;ctx.lineCap='round';ctx.stroke();
-    const pct=val/max;const vend=start+range*Math.min(pct,1);
-    ctx.beginPath();ctx.arc(cx,cy,r,start,vend);ctx.strokeStyle=o.c.m;ctx.lineWidth=8;ctx.lineCap='round';ctx.stroke();
-    if(max<=100){const lAngle=start+range;ctx.beginPath();ctx.arc(cx,cy,r+6,lAngle-0.02,lAngle+0.02);ctx.strokeStyle='#ef4444';ctx.lineWidth=12;ctx.stroke()}
-  });
-}
-drawGauge(document.getElementById('coverageGauges'),O,80);
-drawGauge(document.getElementById('farGauges'),O,100);
+/** Coverage & FAR Bar Charts */
+new Chart(document.getElementById('coverageChart'),{type:'bar',data:{labels:O.map(o=>o.name),datasets:[{label:'建ぺい率 (%)',data:O.map(o=>o.coverage),backgroundColor:O.map(o=>o.c.bg),borderColor:O.map(o=>o.c.b),borderWidth:1.5}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{min:0,max:85,grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'},color:O.map(o=>o.c.m)}}},plugins:{legend:{display:false},annotation:{annotations:{limit:{type:'line',xMin:80,xMax:80,borderColor:'#ef4444',borderWidth:1.5,borderDash:[4,3],label:{display:true,content:'上限80%',position:'end',font:{size:9},color:'#ef4444',backgroundColor:'transparent'}}}}}}});
+new Chart(document.getElementById('farChart'),{type:'bar',data:{labels:O.map(o=>o.name),datasets:[{label:'容積率使用率 (%)',data:O.map(o=>o.far),backgroundColor:O.map(o=>o.c.bg),borderColor:O.map(o=>o.c.b),borderWidth:1.5}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{min:0,max:105,grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'},color:O.map(o=>o.c.m)}}},plugins:{legend:{display:false},annotation:{annotations:{limit:{type:'line',xMin:100,xMax:100,borderColor:'#ef4444',borderWidth:1.5,borderDash:[4,3],label:{display:true,content:'上限100%',position:'end',font:{size:9},color:'#ef4444',backgroundColor:'transparent'}}}}}}});
 
 /** Site Plans */
 !function(){const el=document.getElementById('sitePlans');const siteW=20.2,siteD=20.1;
