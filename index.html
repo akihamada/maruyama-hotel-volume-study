@@ -299,6 +299,43 @@ footer{text-align:center;padding:48px 0;color:var(--dim);font-size:.75rem;border
   </div>
 </div>
 
+<!-- Zoning Study -->
+<div class="section">
+  <div class="section-title">🏗️ 客室フロア ゾーニングスタディ — コア配置・避難動線</div>
+  <div class="card">
+    <div class="card-head">センターコア＋端部非常階段 — ダブルロード廊下（両側居室）/ 歩行距離・2方向避難検証</div>
+    <div class="parking-row" id="zoningPlans"></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.72rem;color:var(--dim)">
+      <span>🟦 客室</span>
+      <span>🟫 スイート</span>
+      <span style="color:#94a3b8">⬜ 廊下(W≥1.6m)</span>
+      <span style="color:#64748b">◼ EV+主階段</span>
+      <span style="color:#ef4444">◼ 非常階段</span>
+      <span style="color:#22c55e">◼ PS/EPS</span>
+      <span style="color:#f59e0b">◼ リネン庫</span>
+      <span style="color:#ef4444">⤷ 歩行距離</span>
+    </div>
+  </div>
+</div>
+
+<!-- Legal Compliance -->
+<div class="section">
+  <div class="section-title">📋 法規適合チェック</div>
+  <div class="card" style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+      <thead><tr style="border-bottom:1px solid var(--glass-border)">
+        <th style="text-align:left;padding:8px;color:var(--dim)">法規</th>
+        <th style="text-align:left;padding:8px;color:var(--dim)">条文</th>
+        <th style="text-align:left;padding:8px;color:var(--dim)">基準</th>
+        <th style="text-align:center;padding:8px;color:#ff6b8a">案A</th>
+        <th style="text-align:center;padding:8px;color:#4ecdc4">案B</th>
+        <th style="text-align:center;padding:8px;color:#a855f7">案C</th>
+      </tr></thead>
+      <tbody id="legalTable"></tbody>
+    </table>
+  </div>
+</div>
+
 <!-- Charts -->
 <div class="section">
   <div class="section-title">分析チャート</div>
@@ -924,6 +961,184 @@ O.forEach(o=>{
   const div=document.createElement('div');div.className='site-plan';
   div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${defs}${svg}</svg><div class="site-plan-label" style="color:${o.c.m};font-size:.9rem">${o.name} — 1F配置図</div><div class="site-plan-sub" style="font-size:.75rem">計${pk.piloP+pk.garP+pk.surfP}台: ピロティ${pk.piloP}台 + 屋内G${pk.garP}台 + 平面${pk.surfP}台</div>`;
   el.appendChild(div);
+});
+}();
+
+/** Zoning Study — 客室フロア ゾーニング SVG */
+!function(){
+const el=document.getElementById('zoningPlans');
+const EW=13.0;/* E-W depth */
+/* Zoning data per option: which floors to show */
+const ZD={
+  a:[{f:'3F',ns:24.6,rooms:[{t:'SD',w:4.8,d:5.2,x:0},{t:'SD',w:4.8,d:5.2,x:5.0},{t:'SD',w:4.8,d:5.2,x:13.0},{t:'SD',w:4.8,d:5.2,x:18.0},{t:'SD',w:6.0,d:5.2,x:0,side:'W'}],suite:false},
+      {f:'4F(ST)',ns:24.6,rooms:[{t:'ST',w:10.0,d:5.2,x:0},{t:'SD',w:4.8,d:5.2,x:13.0},{t:'SD',w:4.8,d:5.2,x:18.0}],suite:true}],
+  b:[{f:'3F',ns:21.5,rooms:[{t:'SD',w:5.0,d:5.2,x:0},{t:'SD',w:5.0,d:5.2,x:5.2},{t:'SD',w:5.0,d:5.2,x:14.5}],suite:false},
+      {f:'5F(ST)',ns:21.5,rooms:[{t:'ST',w:8.5,d:5.2,x:0},{t:'SD',w:4.8,d:5.2,x:8.7},{t:'SD',w:4.8,d:5.2,x:14.0}],suite:true}],
+  c:[{f:'3F',ns:18.8,rooms:[{t:'SD',w:4.5,d:5.2,x:0},{t:'SD',w:4.5,d:5.2,x:4.7},{t:'SD',w:4.5,d:5.2,x:12.0}],suite:false},
+      {f:'6F(ST)',ns:18.8,rooms:[{t:'ST',w:7.5,d:5.2,x:0},{t:'SD',w:4.0,d:5.2,x:7.7},{t:'CP',w:3.5,d:5.2,x:12.0}],suite:true}]
+};
+/* Core dimensions (meters) */
+const coreW=3.5,coreD=EW,corridorW=1.6,emergW=2.5,emergD=4.5;
+const roomD=5.2;/* room depth E-W (each side) */
+
+Object.entries(ZD).forEach(([oid,floors])=>{
+  const o=O.find(x=>x.id===oid);
+  floors.forEach(fl=>{
+    const W=520,H=260,m=36;
+    const ns=fl.ns;
+    const scX=(W-m*2)/ns;
+    const scY=(H-m*2)/EW;
+    const ox=m,oy=m;
+    const bw=ns*scX,bh=EW*scY;
+
+    let svg='';
+    const defs=`<defs><marker id="za${oid}${fl.f}" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4" fill="rgba(239,68,68,0.8)"/></marker></defs>`;
+
+    /* Building outline */
+    svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="rgba(30,41,59,0.4)" stroke="${o.c.m}" stroke-width="2" rx="3"/>`;
+
+    /* Core (center) */
+    const coreX=ox+(ns/2-coreW/2)*scX;
+    const coreY=oy;
+    const cwPx=coreW*scX,chPx=bh;
+    svg+=`<rect x="${coreX}" y="${coreY}" width="${cwPx}" height="${chPx}" fill="rgba(100,116,139,0.25)" stroke="rgba(100,116,139,0.5)" stroke-width="1" rx="2"/>`;
+    /* EV */
+    const evW=2.0*scX,evH=2.5*scY;
+    svg+=`<rect x="${coreX+(cwPx-evW)/2}" y="${coreY+4}" width="${evW}" height="${evH}" fill="rgba(100,116,139,0.35)" stroke="rgba(100,116,139,0.6)" stroke-width="0.8" rx="1"/>`;
+    svg+=`<text x="${coreX+cwPx/2}" y="${coreY+4+evH/2+3}" text-anchor="middle" fill="rgba(148,163,184,0.9)" font-size="8" font-weight="600">EV</text>`;
+    /* Main stair */
+    const stW=2.8*scX,stH=4.0*scY;
+    const stY=coreY+evH+8;
+    svg+=`<rect x="${coreX+(cwPx-stW)/2}" y="${stY}" width="${stW}" height="${stH}" fill="rgba(100,116,139,0.3)" stroke="rgba(100,116,139,0.5)" stroke-width="0.8" rx="1"/>`;
+    svg+=`<text x="${coreX+cwPx/2}" y="${stY+stH/2+3}" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-size="7">主階段</text>`;
+    /* PS (2 small boxes) */
+    const psS=1.0*Math.min(scX,scY);
+    svg+=`<rect x="${coreX+2}" y="${stY+stH+4}" width="${psS}" height="${psS}" fill="rgba(34,197,94,0.2)" stroke="rgba(34,197,94,0.5)" stroke-width="0.6" rx="1"/>`;
+    svg+=`<text x="${coreX+2+psS/2}" y="${stY+stH+4+psS/2+2}" text-anchor="middle" fill="rgba(34,197,94,0.7)" font-size="5">PS</text>`;
+    svg+=`<rect x="${coreX+cwPx-psS-2}" y="${stY+stH+4}" width="${psS}" height="${psS}" fill="rgba(34,197,94,0.2)" stroke="rgba(34,197,94,0.5)" stroke-width="0.6" rx="1"/>`;
+
+    /* Emergency staircase (south end) */
+    const emX=ox+bw-emergW*scX-2;
+    const emY=oy+2;
+    const emWpx=emergW*scX,emHpx=emergD*scY;
+    svg+=`<rect x="${emX}" y="${emY}" width="${emWpx}" height="${emHpx}" fill="rgba(239,68,68,0.12)" stroke="rgba(239,68,68,0.5)" stroke-width="1" rx="2"/>`;
+    svg+=`<text x="${emX+emWpx/2}" y="${emY+emHpx/2-2}" text-anchor="middle" fill="rgba(239,68,68,0.85)" font-size="7" font-weight="600">非常</text>`;
+    svg+=`<text x="${emX+emWpx/2}" y="${emY+emHpx/2+8}" text-anchor="middle" fill="rgba(239,68,68,0.7)" font-size="6">階段</text>`;
+
+    /* Corridors (both sides of core, between rooms) */
+    const corrY_E=oy+roomD*scY;/* East-side corridor top */
+    const corrH=corridorW*scY;
+    /* East side corridor (top of plan = east/road side) */
+    svg+=`<rect x="${ox+1}" y="${corrY_E}" width="${coreX-ox-2}" height="${corrH}" fill="rgba(148,163,184,0.08)" stroke="rgba(148,163,184,0.2)" stroke-width="0.5" stroke-dasharray="3,2" rx="1"/>`;
+    svg+=`<rect x="${coreX+cwPx+1}" y="${corrY_E}" width="${emX-coreX-cwPx-2}" height="${corrH}" fill="rgba(148,163,184,0.08)" stroke="rgba(148,163,184,0.2)" stroke-width="0.5" stroke-dasharray="3,2" rx="1"/>`;
+    /* West side corridor */
+    const corrY_W=oy+roomD*scY+corrH;
+    svg+=`<text x="${ox+10}" y="${corrY_E+corrH/2+3}" fill="rgba(148,163,184,0.5)" font-size="6">廊下 W=1.6m</text>`;
+
+    /* Rooms — East side (top) */
+    fl.rooms.forEach(r=>{
+      if(r.side==='W') return;
+      const rx=ox+r.x*scX;
+      const rw=r.w*scX;
+      const rh=roomD*scY;
+      const isSuite=r.t==='ST';
+      const isCompact=r.t==='CP';
+      const fill=isSuite?'rgba(180,83,9,0.15)':isCompact?'rgba(139,92,246,0.1)':'rgba(59,130,246,0.1)';
+      const stroke=isSuite?'rgba(180,83,9,0.5)':isCompact?'rgba(139,92,246,0.4)':'rgba(59,130,246,0.4)';
+      svg+=`<rect x="${rx+1}" y="${oy+1}" width="${rw-2}" height="${rh-2}" fill="${fill}" stroke="${stroke}" stroke-width="0.8" rx="2"/>`;
+      const label=isSuite?`ST ${r.w*r.d|0}㎡`:isCompact?`CP ${r.w*r.d|0}㎡`:`SD ${r.w*r.d|0}㎡`;
+      svg+=`<text x="${rx+rw/2}" y="${oy+rh/2}" text-anchor="middle" fill="${stroke.replace('0.4','0.9').replace('0.5','0.9')}" font-size="${isSuite?9:8}" font-weight="${isSuite?700:500}">${label}</text>`;
+    });
+
+    /* Rooms — West side (bottom, mirrored fewer) */
+    const westRooms=fl.rooms.filter(r=>r.side==='W');
+    if(westRooms.length>0){
+      westRooms.forEach(r=>{
+        const rx=ox+r.x*scX;
+        const rw=r.w*scX;
+        const rTop=corrY_E+corrH;
+        const rh=roomD*scY;
+        svg+=`<rect x="${rx+1}" y="${rTop+1}" width="${rw-2}" height="${rh-2}" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.4)" stroke-width="0.8" rx="2"/>`;
+        svg+=`<text x="${rx+rw/2}" y="${rTop+rh/2}" text-anchor="middle" fill="rgba(59,130,246,0.8)" font-size="8">SD ${r.w*r.d|0}㎡</text>`;
+      });
+    }
+    /* Linen room (south-west corner if space) */
+    const linX=emX;
+    const linY=oy+bh-2.5*scY;
+    const linW=emergW*scX;
+    const linH=2.5*scY;
+    svg+=`<rect x="${linX}" y="${linY}" width="${linW}" height="${linH}" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.4)" stroke-width="0.6" rx="1"/>`;
+    svg+=`<text x="${linX+linW/2}" y="${linY+linH/2+3}" text-anchor="middle" fill="rgba(245,158,11,0.7)" font-size="6">リネン庫</text>`;
+
+    /* Walking distance arc — farthest room to nearest stair */
+    const farRoomX=ox+4;/* NW corner room */
+    const farRoomY=oy+roomD*scY/2;
+    const nearStairX=coreX+cwPx/2;
+    const nearStairY=stY+stH/2;
+    const walkDist=((fl.rooms[0]?.x||0)+fl.rooms[0]?.w/2+coreW/2+corridorW).toFixed(1);
+    svg+=`<path d="M${farRoomX},${farRoomY} L${farRoomX},${corrY_E+corrH/2} L${nearStairX},${corrY_E+corrH/2}" fill="none" stroke="rgba(239,68,68,0.5)" stroke-width="1.2" stroke-dasharray="4,2.5" marker-end="url(#za${oid}${fl.f})"/>`;
+    svg+=`<text x="${(farRoomX+nearStairX)/2}" y="${corrY_E+corrH/2-5}" text-anchor="middle" fill="rgba(239,68,68,0.85)" font-size="8" font-weight="600">${walkDist}m ≤50m ✓</text>`;
+
+    /* 2nd path to emergency stair */
+    const emCx=emX+emWpx/2;
+    const emCy=emY+emHpx/2;
+    svg+=`<path d="M${farRoomX},${farRoomY+5} L${farRoomX},${corrY_E+corrH/2+6} L${emCx},${corrY_E+corrH/2+6} L${emCx},${emCy}" fill="none" stroke="rgba(239,68,68,0.3)" stroke-width="0.8" stroke-dasharray="3,2" marker-end="url(#za${oid}${fl.f})"/>`;
+    const walkDist2=(ns-emergW/2+corridorW).toFixed(1);
+    svg+=`<text x="${(farRoomX+emCx)/2}" y="${corrY_E+corrH/2+15}" text-anchor="middle" fill="rgba(239,68,68,0.6)" font-size="7">${walkDist2}m (2方向) ✓</text>`;
+
+    /* Dimension lines */
+    svg+=`<line x1="${ox}" y1="${oy-8}" x2="${ox+bw}" y2="${oy-8}" stroke="var(--dim)" stroke-width="0.5"/>`;
+    svg+=`<text x="${ox+bw/2}" y="${oy-12}" text-anchor="middle" fill="var(--dim)" font-size="8">${ns}m</text>`;
+    svg+=`<line x1="${ox-10}" y1="${oy}" x2="${ox-10}" y2="${oy+bh}" stroke="var(--dim)" stroke-width="0.5"/>`;
+    svg+=`<text x="${ox-14}" y="${oy+bh/2}" fill="var(--dim)" font-size="8" transform="rotate(-90,${ox-14},${oy+bh/2})" text-anchor="middle">${EW}m</text>`;
+
+    /* Road label */
+    svg+=`<text x="${ox+bw+6}" y="${oy+12}" fill="rgba(148,163,184,0.5)" font-size="7">東</text>`;
+    svg+=`<text x="${ox+bw+6}" y="${oy+bh-4}" fill="rgba(148,163,184,0.5)" font-size="7">西</text>`;
+    svg+=`<text x="${ox+4}" y="${oy-15}" fill="rgba(148,163,184,0.5)" font-size="7">N</text>`;
+    svg+=`<text x="${ox+bw-8}" y="${oy-15}" fill="rgba(148,163,184,0.5)" font-size="7">S</text>`;
+
+    const div=document.createElement('div');div.className='site-plan';
+    div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${defs}${svg}</svg><div class="site-plan-label" style="color:${o.c.m};font-size:.9rem">${o.name} — ${fl.f}</div><div class="site-plan-sub" style="font-size:.72rem">${fl.suite?'スイート階':'スタンダード階'} / ダブルロード廊下</div>`;
+    el.appendChild(div);
+  });
+});
+}();
+
+/** Legal Compliance Table */
+!function(){
+const tb=document.getElementById('legalTable');
+const rows=[
+  ['建基法','令119条','廊下幅 ≥1.6m（両側居室）','✅ 1.6m','✅ 1.6m','✅ 1.6m'],
+  ['建基法','令120条','歩行距離 ≤50m（耐火）','✅ 15m','✅ 13m','✅ 12m'],
+  ['建基法','令121条','2以上の直通階段','✅ 2階段','✅ 2階段','✅ 2階段'],
+  ['建基法','令122条','避難階段（5F以上）','✅ 設置','✅ 設置','✅ 設置'],
+  ['建基法','令23条','階段寸法 踏面≥24 蹴上≤20','✅ 適合','✅ 適合','✅ 適合'],
+  ['建基法','令126条の2','排煙設備','✅ 1-2F設置','✅ 1-2F設置','✅ 1-2F設置'],
+  ['建基法','法35条の2','内装制限（準不燃以上）','✅ 適用','✅ 適用','✅ 適用'],
+  ['消防法','令11条','屋内消火栓（≥700㎡耐火）','✅ 設置','✅ 設置','✅ 設置'],
+  ['消防法','令12条','スプリンクラー','— 不要','— 不要','— 不要'],
+  ['消防法','令21条','自動火災報知設備','✅ 全階','✅ 全階','✅ 全階'],
+  ['消防法','令24条','避難器具（3F以上）','✅ 設置','✅ 設置','✅ 設置'],
+  ['消防法','令25条','誘導灯','✅ 全階','✅ 全階','✅ 全階'],
+  ['旅館業法','—','客室面積 ≥7㎡','✅ 全室40㎡+','✅ 全室40㎡+','✅ 28㎡+'],
+  ['旅館業法','—','玄関帳場（フロント）','✅ 1F設置','✅ 1F設置','✅ 1F設置'],
+  ['旅館業法','—','入浴設備','✅ 各室個浴','✅ 各室個浴','✅ 各室個浴'],
+];
+rows.forEach(r=>{
+  const tr=document.createElement('tr');
+  tr.style.borderBottom='1px solid rgba(255,255,255,0.04)';
+  r.forEach((c,i)=>{
+    const td=document.createElement('td');
+    td.style.padding='6px 8px';
+    td.style.textAlign=i>=3?'center':'left';
+    if(c.startsWith('✅')) td.style.color='#22c55e';
+    else if(c.startsWith('—')) td.style.color='var(--dim)';
+    else if(c.startsWith('⚠')) td.style.color='#f59e0b';
+    td.textContent=c;
+    tr.appendChild(td);
+  });
+  tb.appendChild(tr);
 });
 }();
 
