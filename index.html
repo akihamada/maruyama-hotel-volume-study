@@ -81,8 +81,8 @@ h1{font-size:2.4rem;font-weight:800;letter-spacing:-.02em;background:linear-grad
 .site-plan-sub{font-size:.72rem;color:var(--dim)}
 
 /* Revenue */
-.rev-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
-@media(max-width:900px){.rev-grid{grid-template-columns:repeat(3,1fr)}}
+.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.rev-grid{grid-template-columns:1fr}}
 .rev-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:16px;text-align:center}
 .rev-val{font-size:1.6rem;font-weight:800;margin:8px 0 2px}
 .rev-sub{font-size:.7rem;color:var(--dim)}
@@ -221,7 +221,7 @@ footer{text-align:center;padding:48px 0;color:var(--dim);font-size:.75rem;border
 <div class="hero">
   <div class="hero-tag">Volume Study Comparison</div>
   <h1>円山ホテル ボリュームスタディ</h1>
-  <p class="hero-sub">6案比較ダッシュボード — 全34条例反映・施行令2条準拠</p>
+  <p class="hero-sub">3案比較ダッシュボード — 全34条例反映・施行令2条準拠</p>
   <div class="badges">
     <div class="badge"><span class="badge-val">406.89㎡</span><span class="badge-label">敷地面積</span></div>
     <div class="badge"><span class="badge-val">80%</span><span class="badge-label">建ぺい率</span></div>
@@ -511,21 +511,15 @@ const CONFIG = {
   }
 };
 
-/** Color palette */
-const C={a:{m:'#ff6b8a',bg:'rgba(255,107,138,0.2)',b:'rgba(255,107,138,0.8)'},b:{m:'#4ecdc4',bg:'rgba(78,205,196,0.2)',b:'rgba(78,205,196,0.8)'},g:{m:'#ffbe0b',bg:'rgba(255,190,11,0.2)',b:'rgba(255,190,11,0.8)'},d:{m:'#a855f7',bg:'rgba(168,85,247,0.2)',b:'rgba(168,85,247,0.8)'},e:{m:'#06b6d4',bg:'rgba(6,182,212,0.2)',b:'rgba(6,182,212,0.8)'},z:{m:'#f97316',bg:'rgba(249,115,22,0.2)',b:'rgba(249,115,22,0.8)'}};
+/** Color palette — 3案 */
+const C={a:{m:'#ff6b8a',bg:'rgba(255,107,138,0.2)',b:'rgba(255,107,138,0.8)'},b:{m:'#4ecdc4',bg:'rgba(78,205,196,0.2)',b:'rgba(78,205,196,0.8)'},c:{m:'#a855f7',bg:'rgba(168,85,247,0.2)',b:'rgba(168,85,247,0.8)'}};
 const O=[
-  {id:'a',name:'案A',sub:'5F 全室ラグジュアリー邸宅',c:C.a,floors:[320,300,265,225,100],terraces:[10,15,20,30,130],fn:['1F ロビー・カフェ+ピロティ','2F レストラン','3F 客室','4F 客室','5F オフィス+テラス'],h:18,rooms:7,lic:'旅館',far:92.7,net:960,total:1210,terr:205,n1f:200,park:7,site:87,ceil:4.0,shadow:'◎',coverage:78.7,buildArea:320,uses:{pub:620,guest:490,office:100},adr:80000,
-    roomMix:[{type:'グランドスイート',count:2,area:55,adr:105000},{type:'デラックス',count:5,area:38,adr:70000}],concept:'全室40㎡超「泊まれる邸宅」。5Fオフィス100㎡+ルーフテラス。計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ+ピロティ(3台)',rooms:[]},{f:'2F',use:'レストラン',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'GS',a:55},{t:'DX',a:38},{t:'DX',a:38},{t:'DX',a:38}]},{f:'4F',use:'客室',rooms:[{t:'GS',a:55},{t:'DX',a:38},{t:'DX',a:38}]},{f:'5F',use:'オフィス100㎡+テラス',rooms:[]}]},
-  {id:'b',name:'案B',sub:'5F デザイナーズ旅館',c:C.b,floors:[320,200,270,225,100],terraces:[10,15,15,25,125],fn:['1F ロビー(6m天井)+ピロティ','2F レストラン','3F 客室','4F 客室','5F オフィス+テラス'],h:20,rooms:7,lic:'旅館',far:84.9,net:875,total:1115,terr:190,n1f:200,park:7,site:87,ceil:6.0,shadow:'◎◎',coverage:78.7,buildArea:320,uses:{pub:520,guest:495,office:100},adr:76000,
-    roomMix:[{type:'スイート',count:2,area:50,adr:95000},{type:'ジュニアスイート',count:5,area:35,adr:68000}],concept:'6m天井ロビーが建築発信力No.1。5Fオフィス100㎡+テラス。計7台',floorRooms:[{f:'1F',use:'ロビー(6m天井)+ピロティ(3台)',rooms:[]},{f:'2F',use:'レストラン',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:50},{t:'JS',a:35},{t:'JS',a:35},{t:'JS',a:35}]},{f:'4F',use:'客室',rooms:[{t:'ST',a:50},{t:'JS',a:35},{t:'JS',a:35}]},{f:'5F',use:'オフィス100㎡+テラス',rooms:[]}]},
-  {id:'g',name:'案C',sub:'6F 全室40㎡均一',c:C.g,floors:[280,260,230,220,210,100],terraces:[10,12,15,15,20,85],fn:['1F ロビー・カフェ+屋内G','2F ギャラリー・カフェ','3F 客室','4F 客室','5F 客室','6F オフィス+テラス'],h:22,rooms:9,lic:'旅館',far:93.7,net:1020,total:1300,terr:157,n1f:215,park:7,site:120,ceil:4.0,shadow:'○',coverage:68.8,buildArea:280,uses:{pub:800,guest:660,office:100},adr:62000,
-    roomMix:[{type:'コーナースイート',count:2,area:42,adr:78000},{type:'デラックスツイン',count:3,area:40,adr:62000},{type:'デラックスダブル',count:4,area:40,adr:55000}],concept:'全室40㎡均一で運営効率最大化。6Fオフィス100㎡+テラス。計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ+屋内G(1台)',rooms:[]},{f:'2F',use:'ギャラリー・カフェ',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'CS',a:42},{t:'DT',a:40},{t:'DD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'DT',a:40},{t:'DT',a:40},{t:'DD',a:40}]},{f:'5F',use:'客室',rooms:[{t:'CS',a:42},{t:'DD',a:40},{t:'DD',a:40}]},{f:'6F',use:'オフィス100㎡+テラス',rooms:[]}]},
-  {id:'d',name:'案D',sub:'7F 眺望タワー',c:C.d,floors:[245,230,195,180,165,155,100],terraces:[10,10,15,15,20,25,85],fn:['1F ロビー+屋内G','2F レストラン','3F 客室','4F 客室','5F 客室','6F 客室','7F オフィス+テラス'],h:25,rooms:10,lic:'ホテル',far:93.2,net:955,total:1270,terr:180,n1f:185,park:7,site:162,ceil:4.0,shadow:'△',coverage:60.2,buildArea:245,uses:{pub:475,guest:695,office:100},adr:58000,
-    roomMix:[{type:'ペントハウススイート',count:2,area:40,adr:85000},{type:'ツイン',count:5,area:30,adr:55000},{type:'スタンダード',count:3,area:22,adr:42000}],concept:'7Fオフィス100㎡+山並みテラス。平面6台+屋内G1台=計7台',floorRooms:[{f:'1F',use:'ロビー+屋内G(1台)',rooms:[]},{f:'2F',use:'レストラン',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'TW',a:30},{t:'TW',a:30},{t:'SD',a:22}]},{f:'4F',use:'客室',rooms:[{t:'TW',a:30},{t:'SD',a:22},{t:'SD',a:22}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:30},{t:'TW',a:30}]},{f:'6F',use:'客室',rooms:[{t:'PH',a:40},{t:'PH',a:40}]},{f:'7F',use:'オフィス100㎡+テラス',rooms:[]}]},
-  {id:'e',name:'案E',sub:'6F スイート混合',c:C.e,floors:[275,255,210,200,195,100],terraces:[8,10,12,12,15,105],fn:['1F ロビー・カフェ+屋内G','2F ギャラリー・ライブラリー','3F 客室','4F 客室','5F 客室','6F オフィス+テラス'],h:22,rooms:9,lic:'ホテル',far:91.3,net:965,total:1235,terr:162,n1f:210,park:7,site:132,ceil:3.5,shadow:'○',coverage:67.6,buildArea:275,uses:{pub:530,guest:605,office:100},adr:56000,
-    roomMix:[{type:'スイート',count:2,area:38,adr:78000},{type:'ツイン',count:4,area:28,adr:55000},{type:'コンパクト',count:3,area:22,adr:40000}],concept:'2Fギャラリーで文化発信。6Fオフィス100㎡+テラス。計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ+屋内G(1台)',rooms:[]},{f:'2F',use:'ギャラリー・ライブラリー',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:38},{t:'TW',a:28},{t:'CP',a:22}]},{f:'4F',use:'客室',rooms:[{t:'ST',a:38},{t:'TW',a:28},{t:'CP',a:22}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:28},{t:'TW',a:28},{t:'CP',a:22}]},{f:'6F',use:'オフィス100㎡+テラス',rooms:[]}]},
-  {id:'z',name:'案F',sub:'7F コンパクト多室',c:C.z,floors:[240,220,195,185,175,165,100],terraces:[5,8,10,10,12,15,45],fn:['1F ロビー+屋内G','2F ギャラリー・イベントスペース','3F 客室','4F 客室','5F 客室','6F 客室','7F オフィス+テラス'],h:25,rooms:12,lic:'ホテル',far:93.9,net:960,total:1280,terr:105,n1f:180,park:7,site:167,ceil:3.5,shadow:'△',coverage:59.0,buildArea:240,uses:{pub:520,guest:660,office:100},adr:48000,
-    roomMix:[{type:'ツイン',count:4,area:25,adr:50000},{type:'スタンダード',count:4,area:22,adr:48000},{type:'コンパクト',count:4,area:18,adr:32000}],concept:'2Fギャラリー＆イベントで集客。7Fオフィス100㎡+テラス。計7台',floorRooms:[{f:'1F',use:'ロビー+屋内G(1台)',rooms:[]},{f:'2F',use:'ギャラリー・イベントスペース',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'4F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'5F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'6F',use:'客室',rooms:[{t:'TW',a:25},{t:'SD',a:22},{t:'CP',a:18}]},{f:'7F',use:'オフィス100㎡+テラス',rooms:[]}]}
+  {id:'a',name:'案A',sub:'5F ブティック旅館',c:C.a,floors:[320,240,265,225,100],terraces:[10,15,20,30,130],fn:['1F ロビー・カフェ+ピロティ（大階段）','2F イベントスペース（吹抜80㎡）+ギャラリー','3F 客室','4F 客室','5F オフィス+テラス'],h:18,rooms:8,lic:'旅館',far:88.1,net:900,total:1150,terr:205,n1f:200,park:7,site:87,ceil:4.0,shadow:'◎',coverage:78.7,buildArea:320,uses:{pub:560,guest:490,office:100},adr:75000,
+    roomMix:[{type:'スイート',count:1,area:80,adr:120000},{type:'スタンダード',count:7,area:40,adr:68000}],concept:'1-2F大階段＆吹抜けイベント空間。全室40㎡超の8室旅館。計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ+ピロティ4台+G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（吹抜80㎡）+ギャラリー',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:80},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'5F',use:'オフィス100㎡+テラス',rooms:[]}]},
+  {id:'b',name:'案B',sub:'6F バランス',c:C.b,floors:[280,200,230,220,210,100],terraces:[10,15,15,15,20,85],fn:['1F ロビー・カフェ+屋内G（大階段）','2F イベントスペース（吹抜60㎡）+カフェ','3F 客室','4F 客室','5F 客室','6F オフィス+テラス'],h:22,rooms:10,lic:'旅館',far:91.8,net:960,total:1240,terr:160,n1f:215,park:7,site:127,ceil:4.0,shadow:'○',coverage:68.8,buildArea:280,uses:{pub:480,guest:660,office:100},adr:60000,
+    roomMix:[{type:'スイート',count:1,area:65,adr:95000},{type:'スタンダード',count:9,area:40,adr:56000}],concept:'1-2F大階段＆吹抜けイベント。全室40㎡以上の10室旅館。計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ+屋内G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（吹抜60㎡）+カフェ',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:65},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'5F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'6F',use:'オフィス100㎡+テラス',rooms:[]}]},
+  {id:'c',name:'案C',sub:'7F タワー',c:C.c,floors:[245,180,195,180,165,155,100],terraces:[10,10,15,15,20,25,85],fn:['1F ロビー+屋内G（大階段）','2F イベントスペース（吹抜50㎡）+ギャラリー','3F 客室','4F 客室','5F 客室','6F 客室','7F オフィス+テラス'],h:25,rooms:13,lic:'ホテル',far:89.3,net:905,total:1220,terr:180,n1f:185,park:7,site:162,ceil:3.5,shadow:'△',coverage:60.2,buildArea:245,uses:{pub:425,guest:695,office:100},adr:48000,
+    roomMix:[{type:'スイート',count:1,area:60,adr:85000},{type:'スタンダード',count:8,area:40,adr:50000},{type:'コンパクト',count:4,area:28,adr:35000}],concept:'1-2F大階段＆吹抜け。4フロア13室で収益最大化。計7台',floorRooms:[{f:'1F',use:'ロビー+屋内G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（吹抜50㎡）+ギャラリー',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:60},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'CP',a:28},{t:'CP',a:28}]},{f:'5F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'CP',a:28}]},{f:'6F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'CP',a:28}]},{f:'7F',use:'オフィス100㎡+テラス',rooms:[]}]}
 ];
 
 /**
@@ -713,9 +707,7 @@ const setbackW=0.5,setbackN=0.5,setbackS=0.5,setbackE=0.27;
 const parkW=2.5,parkD=5.0,aisle=6.0;/* 駐車1台幅,奥行,通路幅 */
 
 /* 各案の駐車配置: surfP=南端地上台数, piloP=ピロティ台数, garP=屋内ガレージ台数 */
-const PK={a:{surfP:2,piloP:4,garP:1},b:{surfP:2,piloP:4,garP:1},
-  g:{surfP:4,piloP:2,garP:1},d:{surfP:5,piloP:1,garP:1},
-  e:{surfP:4,piloP:2,garP:1},z:{surfP:5,piloP:1,garP:1}};
+const PK={a:{surfP:2,piloP:4,garP:1},b:{surfP:4,piloP:2,garP:1},c:{surfP:5,piloP:1,garP:1}};
 
 O.forEach(o=>{
   const W=260,H=190,m=28;/* SVG寸法,マージン */
@@ -830,9 +822,7 @@ O.forEach(o=>{
 !function(){
 const el=document.getElementById('parking1F');
 const depth=13.0;/* 建物E-W奥行(m) */
-const PK={a:{surfP:2,piloP:4,garP:1},b:{surfP:2,piloP:4,garP:1},
-  g:{surfP:4,piloP:2,garP:1},d:{surfP:5,piloP:1,garP:1},
-  e:{surfP:4,piloP:2,garP:1},z:{surfP:5,piloP:1,garP:1}};
+const PK={a:{surfP:2,piloP:4,garP:1},b:{surfP:4,piloP:2,garP:1},c:{surfP:5,piloP:1,garP:1}};
 const pW=2.5,pD=5.0,aisle=6.0,tR=5.3;
 
 O.forEach(o=>{
@@ -939,8 +929,8 @@ O.forEach(o=>{
 
 /** Radar */
 new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['実使用面積','1Fパブリック','客室数','テラス','駐車場','日影余裕','コスト効率','インパクト','建ぺい率余裕'],
-datasets:O.map(o=>({label:o.name,data:[(o.total+o.terr)/1480*10,o.n1f/270*10,o.rooms/10*10,o.terr/140*10,o.park/5*10,o.id==='a'?9:o.id==='b'?10:o.id==='g'?7:4,o.id==='a'?9:o.id==='b'?8:o.id==='g'?7:5,o.id==='a'?6:o.id==='b'?8:o.id==='g'?7:10,(80-o.coverage)/80*10],borderColor:o.c.b,backgroundColor:o.c.bg,borderWidth:2,pointRadius:3,pointBackgroundColor:o.c.m}))},
-options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:10,ticks:{display:false},grid:{color:'rgba(255,255,255,0.04)'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:14,font:{size:10}}}}}});
+datasets:O.map(o=>({label:o.name,data:[(o.total+o.terr)/1480*10,o.n1f/270*10,o.rooms/13*10,o.terr/210*10,o.park/7*10,(80-o.coverage)/80*10,o.net/1000*10,o.rooms>=10?8:6,(80-o.coverage)/80*10],borderColor:o.c.b,backgroundColor:o.c.bg,borderWidth:2,pointRadius:4,pointBackgroundColor:o.c.m}))},
+options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:10,ticks:{display:false},grid:{color:'rgba(255,255,255,0.04)'},pointLabels:{font:{size:11}}}},plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:16,font:{size:11}}}}}});
 
 /** Area Chart */
 new Chart(document.getElementById('areaChart'),{type:'bar',data:{labels:O.map(o=>o.name),datasets:[
