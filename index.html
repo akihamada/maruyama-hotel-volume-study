@@ -303,7 +303,7 @@ footer{text-align:center;padding:48px 0;color:var(--dim);font-size:.75rem;border
 <div class="section">
   <div class="section-title">🏗️ 客室フロア ゾーニングスタディ — コア配置・避難動線</div>
   <div class="card">
-    <div class="card-head">全フロアゾーニング — 動線重視ゾーニング（東壁コア1階段 / 動線シークエンス / 令121条適合）</div>
+    <div class="card-head">全フロアゾーニング — Strip-Packing ゾーニング（南端コア / E-W両側客室 / 建物外形内保証）</div>
     <div class="site-plan-row" id="zoningPlans"></div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.72rem;color:var(--dim)">
       <span>🟦 客室</span>
@@ -964,193 +964,174 @@ O.forEach(o=>{
 });
 }();
 
-/** Zoning Study — 動線重視ゾーニング SVG (東壁コア1階段) */
+/** Zoning Study — Strip-Packing Room Layout Algorithm */
 !function(){
 const el=document.getElementById('zoningPlans');
 const EW=13.0;
-/* Compact core: EV + 1 staircase (兼用) + PS = 3.5m×3.5m */
-const CORE={ns:3.5,ew:3.5};
-const corridorW=1.6,roomD=5.0;
-const PKZ={a:{piloP:6,garP:1,surfP:0},b:{piloP:2,garP:1,surfP:4},c:{piloP:1,garP:1,surfP:5}};
+const CORE={ns:3.5,ew:3.5};/* compact core */
+const CORR=1.6;/* corridor width */
+const WALL=0.7;/* wall thickness each side */
+const ROOM_D=(EW-CORR-WALL*2)/2;/* room depth = (13-1.6-1.4)/2 = 5.0m */
+const PKZ={a:{piloP:6,garP:1},b:{piloP:2,garP:1,surfP:4},c:{piloP:1,garP:1,surfP:5}};
 
 O.forEach(o=>{
   const ns=o.buildArea/EW;
   const pk=PKZ[o.id];
-  /* Core at east wall (top in SVG), centered on NS axis */
-  const coreNSpos=(ns-CORE.ns)/2;/* center of building */
+  /* Core at SOUTH end (right in SVG), service zone covers full EW */
+  const serviceNS=CORE.ns;/* service zone depth along NS */
+  const roomNS=ns-serviceNS;/* available NS for rooms */
 
   o.floorRooms.forEach((fl,fi)=>{
     const W=400,H=260,m=34;
-    const scX=(W-m*2)/ns;
-    const scY=(H-m*2)/(EW+2);
-    const ox=m,oy=m;
-    const bw=ns*scX,bh=EW*scY;
+    /* Scale: map building meters to SVG pixels */
+    const scX=(W-m*2)/ns;/* px per meter along NS (horizontal) */
+    const scY=(H-m*2)/EW;/* px per meter along EW (vertical) */
+    const ox=m,oy=m;/* SVG origin */
+    const bw=ns*scX,bh=EW*scY;/* building rect in px */
     let svg='';
-    const mkId=`zc${o.id}${fi}`;
+    const mkId=`zs${o.id}${fi}`;
     const defs=`<defs><marker id="${mkId}" markerWidth="5" markerHeight="4" refX="4" refY="2" orient="auto"><path d="M0,0 L5,2 L0,4" fill="rgba(239,68,68,0.7)"/></marker></defs>`;
 
     /* Building outline */
-    svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="rgba(30,41,59,0.3)" stroke="${o.c.m}" stroke-width="1.5" rx="2"/>`;
+    svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="rgba(30,41,59,0.25)" stroke="${o.c.m}" stroke-width="1.5" rx="2"/>`;
 
-    /* === CORE (east wall = top in SVG, centered on NS) === */
-    const cX=ox+coreNSpos*scX;
-    const cY=oy;/* top = east */
-    const cW=CORE.ns*scX, cH=CORE.ew*scY;
-    svg+=`<rect x="${cX}" y="${cY}" width="${cW}" height="${cH}" fill="rgba(100,116,139,0.18)" stroke="rgba(100,116,139,0.5)" stroke-width="1" rx="2"/>`;
+    /* === SERVICE ZONE (south end = right side in SVG) === */
+    const svcX=ox+roomNS*scX;/* start X of service zone */
+    const svcW=serviceNS*scX;
+    svg+=`<rect x="${svcX}" y="${oy}" width="${svcW}" height="${bh}" fill="rgba(100,116,139,0.12)" stroke="rgba(100,116,139,0.3)" stroke-width="0.8" rx="2"/>`;
     /* EV */
-    const evW=1.8*scX, evH=1.8*scY;
-    svg+=`<rect x="${cX+3}" y="${cY+3}" width="${evW}" height="${evH}" fill="rgba(100,116,139,0.28)" stroke="rgba(100,116,139,0.4)" stroke-width="0.5" rx="1"/>`;
-    svg+=`<text x="${cX+3+evW/2}" y="${cY+3+evH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.85)" font-size="5" font-weight="600">EV</text>`;
-    /* Staircase (single, 兼用) */
-    const stX=cX+evW+5, stY=cY+3;
-    const stW=1.5*scX, stH=2.5*scY;
-    svg+=`<rect x="${stX}" y="${stY}" width="${stW}" height="${stH}" fill="rgba(100,116,139,0.22)" stroke="rgba(100,116,139,0.35)" stroke-width="0.5" rx="1"/>`;
-    svg+=`<text x="${stX+stW/2}" y="${stY+stH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.65)" font-size="4">階段</text>`;
+    const evPx=1.8, evX=svcX+4, evY=oy+bh/2-evPx*scY/2;
+    svg+=`<rect x="${evX}" y="${evY}" width="${evPx*scX}" height="${evPx*scY}" fill="rgba(100,116,139,0.25)" stroke="rgba(100,116,139,0.4)" stroke-width="0.5" rx="1"/>`;
+    svg+=`<text x="${evX+evPx*scX/2}" y="${evY+evPx*scY/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-size="5" font-weight="600">EV</text>`;
+    /* Staircase */
+    const stX=evX+evPx*scX+3, stW=1.5*scX, stH=2.5*scY;
+    svg+=`<rect x="${stX}" y="${evY}" width="${stW}" height="${stH}" fill="rgba(100,116,139,0.2)" stroke="rgba(100,116,139,0.35)" stroke-width="0.4" rx="1"/>`;
+    svg+=`<text x="${stX+stW/2}" y="${evY+stH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.6)" font-size="4">階段</text>`;
     /* PS */
-    const psS=0.6*Math.min(scX,scY);
-    svg+=`<rect x="${cX+3}" y="${cY+evH+5}" width="${psS}" height="${psS}" fill="rgba(34,197,94,0.12)" stroke="rgba(34,197,94,0.3)" stroke-width="0.3" rx="1"/>`;
+    svg+=`<rect x="${evX}" y="${evY+evPx*scY+3}" width="${0.6*scX}" height="${0.6*scY}" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.25)" stroke-width="0.3" rx="1"/>`;
+    /* EV Hall label */
+    svg+=`<text x="${svcX+svcW/2}" y="${oy+8}" text-anchor="middle" fill="rgba(148,163,184,0.4)" font-size="4">EVホール</text>`;
 
-    const isGF=fl.rooms.length>0;
+    const isGF=fl.rooms&&fl.rooms.length>0;
     const is1F=fi===0, is2F=fi===1, isTop=fi===o.floorRooms.length-1;
-    /* EV hall position (just below/west of core) */
-    const hallY=cY+cH;
-    const hallH=1.5*scY;
+
+    /* === East/West room strips (pixel coordinates) === */
+    const eastY=oy+WALL*scY;/* top of east rooms */
+    const eastH=ROOM_D*scY;/* height of east strip */
+    const corrY=eastY+eastH;/* corridor top */
+    const corrH=CORR*scY;
+    const westY=corrY+corrH;/* top of west rooms */
+    const westH=ROOM_D*scY;
 
     if(is1F){
-      /* === 1F: 道路→エントランス→ロビー→EV === */
-      /* Entrance zone (east side, around core) */
-      svg+=`<rect x="${cX-2*scX}" y="${oy+1}" width="${cW+4*scX}" height="${cH+hallH}" fill="rgba(249,115,22,0.06)" stroke="rgba(249,115,22,0.18)" stroke-width="0.4" rx="2"/>`;
-      svg+=`<text x="${cX+cW/2}" y="${cY+cH+hallH/2+2}" text-anchor="middle" fill="rgba(249,115,22,0.6)" font-size="5">エントランス・フロント</text>`;
-      /* Lobby/Cafe (west side, full width) */
-      const lobbyY=hallY+hallH+2;
-      svg+=`<rect x="${ox+2}" y="${lobbyY}" width="${bw-4}" height="${bh-lobbyY+oy-2}" fill="rgba(249,115,22,0.04)" stroke="rgba(249,115,22,0.15)" stroke-width="0.3" rx="2"/>`;
-      svg+=`<text x="${ox+bw/2}" y="${lobbyY+(bh-lobbyY+oy)/2}" text-anchor="middle" fill="rgba(249,115,22,0.65)" font-size="7" font-weight="600">ロビー・カフェ（吹抜DH天井）</text>`;
-      svg+=`<text x="${ox+bw/2}" y="${lobbyY+(bh-lobbyY+oy)/2+11}" text-anchor="middle" fill="rgba(249,115,22,0.4)" font-size="5">大階段 ↑2F</text>`;
-      /* Piloti parking (south side) */
+      /* === 1F === */
+      const rzW=roomNS*scX;
+      /* Entrance/front near service zone */
+      const entH=3*scY;
+      svg+=`<rect x="${svcX-3*scX}" y="${oy+1}" width="${3*scX+svcW-1}" height="${entH}" fill="rgba(249,115,22,0.06)" stroke="rgba(249,115,22,0.15)" stroke-width="0.3" rx="2"/>`;
+      svg+=`<text x="${svcX}" y="${oy+entH/2+2}" text-anchor="middle" fill="rgba(249,115,22,0.55)" font-size="5">エントランス</text>`;
+      /* Lobby */
+      svg+=`<rect x="${ox+2}" y="${oy+2}" width="${rzW-3*scX-4}" height="${bh*0.6}" fill="rgba(249,115,22,0.04)" stroke="rgba(249,115,22,0.12)" stroke-width="0.3" rx="2"/>`;
+      svg+=`<text x="${ox+rzW/3}" y="${oy+bh*0.25}" text-anchor="middle" fill="rgba(249,115,22,0.65)" font-size="7" font-weight="600">ロビー・カフェ（吹抜DH）</text>`;
+      svg+=`<text x="${ox+rzW/3}" y="${oy+bh*0.25+10}" text-anchor="middle" fill="rgba(249,115,22,0.35)" font-size="5">大階段 ↑2F</text>`;
+      /* Parking */
+      const pY=oy+bh*0.62;
       if(pk.piloP>0){const pw=2.2*scX;
-        for(let i=0;i<Math.min(pk.piloP,5);i++){const px=ox+2+i*pw;
-          svg+=`<rect x="${px}" y="${oy+bh-3*scY}" width="${pw-2}" height="${3*scY-2}" fill="rgba(168,85,247,0.06)" stroke="rgba(168,85,247,0.25)" stroke-width="0.3" rx="1"/>`;
-          svg+=`<text x="${px+pw/2}" y="${oy+bh-1.5*scY+1}" text-anchor="middle" fill="rgba(168,85,247,0.45)" font-size="3">P${i+1}</text>`;}
-      }
+        for(let i=0;i<Math.min(pk.piloP,5);i++){const px=ox+2+i*pw;if(px+pw>svcX-2)break;
+          svg+=`<rect x="${px}" y="${pY}" width="${pw-2}" height="${bh*0.36}" fill="rgba(168,85,247,0.06)" stroke="rgba(168,85,247,0.22)" stroke-width="0.3" rx="1"/>`;
+          svg+=`<text x="${px+pw/2}" y="${pY+bh*0.18}" text-anchor="middle" fill="rgba(168,85,247,0.45)" font-size="3">P${i+1}</text>`;}}
       /* Garage */
-      const gW=2.5*scX;
-      svg+=`<rect x="${ox+bw-gW-2}" y="${oy+bh-3*scY}" width="${gW}" height="${3*scY-2}" fill="rgba(255,190,11,0.08)" stroke="rgba(255,190,11,0.35)" stroke-width="0.4" rx="1"/>`;
-      svg+=`<text x="${ox+bw-gW/2-2}" y="${oy+bh-1.5*scY+1}" text-anchor="middle" fill="rgba(255,190,11,0.65)" font-size="4" font-weight="500">屋内G</text>`;
-      /* Drive aisle */
-      const aY=oy+bh+2,aH=2.5*scY;
-      svg+=`<rect x="${ox}" y="${aY}" width="${bw}" height="${aH}" fill="rgba(100,116,139,0.04)" stroke="rgba(100,116,139,0.1)" stroke-width="0.3" stroke-dasharray="3,2" rx="1"/>`;
-      svg+=`<text x="${ox+bw/2}" y="${aY+aH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-size="4">車路 W=6.0m</text>`;
-      /* Arrow: entrance from road */
-      svg+=`<path d="M${cX+cW/2},${oy-8} L${cX+cW/2},${oy}" fill="none" stroke="rgba(249,115,22,0.5)" stroke-width="1" marker-end="url(#${mkId})"/>`;
-      svg+=`<text x="${cX+cW/2}" y="${oy-11}" text-anchor="middle" fill="rgba(249,115,22,0.5)" font-size="4">道路(東)↓</text>`;
+      svg+=`<rect x="${svcX+2}" y="${oy+bh-3*scY}" width="${svcW-4}" height="${3*scY-2}" fill="rgba(255,190,11,0.08)" stroke="rgba(255,190,11,0.3)" stroke-width="0.4" rx="1"/>`;
+      svg+=`<text x="${svcX+svcW/2}" y="${oy+bh-1.5*scY}" text-anchor="middle" fill="rgba(255,190,11,0.6)" font-size="4" font-weight="500">屋内G</text>`;
       /* Road + landscaping */
-      svg+=`<rect x="${ox+bw+2}" y="${oy-2}" width="6" height="${bh+aH+5}" fill="rgba(100,116,139,0.04)"/>`;
-      for(let i=0;i<Math.floor(bh/10);i++) svg+=`<circle cx="${ox+bw-2}" cy="${oy+5+i*10}" r="2" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.22)" stroke-width="0.3"/>`;
-      svg+=`<text x="${ox+bw-6}" y="${oy-3}" fill="rgba(34,197,94,0.5)" font-size="4">植栽</text>`;
-      /* Sequence arrows */
-      svg+=`<text x="${ox+4}" y="${oy+bh+aH+12}" fill="rgba(249,115,22,0.4)" font-size="4">動線: 道路→エントランス→フロント→EV↑</text>`;
+      svg+=`<rect x="${ox-1}" y="${oy-6}" width="${bw+2}" height="5" fill="rgba(100,116,139,0.04)"/>`;
+      svg+=`<text x="${ox+bw/2}" y="${oy-3}" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-size="4">道路（東）</text>`;
+      for(let i=0;i<Math.floor(bw/12);i++) svg+=`<circle cx="${ox+6+i*12}" cy="${oy+2}" r="1.5" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.2)" stroke-width="0.3"/>`;
+      /* Sequence */
+      svg+=`<text x="${ox+4}" y="${oy+bh+8}" fill="rgba(249,115,22,0.35)" font-size="4">動線: 道路→エントランス→ロビー→EV↑</text>`;
 
     } else if(is2F){
-      /* === 2F: EV→EVホール→イベントスペース(西へ展開) === */
-      svg+=`<rect x="${cX}" y="${hallY}" width="${cW}" height="${hallH}" fill="rgba(100,116,139,0.08)" stroke="rgba(100,116,139,0.2)" stroke-width="0.3" rx="1"/>`;
-      svg+=`<text x="${cX+cW/2}" y="${hallY+hallH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-size="4">EVホール</text>`;
       const vs=o.id==='a'?80:o.id==='b'?60:50;
-      const evtY=hallY+hallH+2;
-      svg+=`<rect x="${ox+2}" y="${evtY}" width="${bw-4}" height="${bh-evtY+oy-2}" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.15)" stroke-width="0.4" rx="2"/>`;
-      svg+=`<text x="${ox+bw/2}" y="${evtY+(bh-evtY+oy)/2-4}" text-anchor="middle" fill="rgba(34,197,94,0.7)" font-size="7" font-weight="600">イベントスペース</text>`;
-      svg+=`<text x="${ox+bw/2}" y="${evtY+(bh-evtY+oy)/2+7}" text-anchor="middle" fill="rgba(34,197,94,0.4)" font-size="5">ギャラリー・カフェ</text>`;
-      /* Void */
+      const rzW=roomNS*scX;
+      svg+=`<rect x="${ox+2}" y="${oy+2}" width="${rzW-4}" height="${bh-4}" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.12)" stroke-width="0.3" rx="2"/>`;
+      svg+=`<text x="${ox+rzW/2}" y="${oy+bh*0.35}" text-anchor="middle" fill="rgba(34,197,94,0.65)" font-size="7" font-weight="600">イベントスペース</text>`;
+      svg+=`<text x="${ox+rzW/2}" y="${oy+bh*0.35+10}" text-anchor="middle" fill="rgba(34,197,94,0.4)" font-size="5">ギャラリー・カフェ</text>`;
       const vW=Math.sqrt(vs)*scX*0.4, vH=Math.sqrt(vs)*scY*0.4;
-      svg+=`<rect x="${ox+bw/3-vW/2}" y="${evtY+5}" width="${vW}" height="${vH}" fill="none" stroke="rgba(239,68,68,0.3)" stroke-width="0.7" stroke-dasharray="3,3" rx="2"/>`;
-      svg+=`<text x="${ox+bw/3}" y="${evtY+5+vH/2+3}" text-anchor="middle" fill="rgba(239,68,68,0.5)" font-size="5">1F吹抜 ${vs}㎡</text>`;
-      svg+=`<text x="${ox+4}" y="${oy+bh+8}" fill="rgba(34,197,94,0.35)" font-size="4">動線: EV→EVホール→イベントスペース(西へ)</text>`;
+      svg+=`<rect x="${ox+rzW*0.3-vW/2}" y="${oy+bh*0.5}" width="${vW}" height="${vH}" fill="none" stroke="rgba(239,68,68,0.3)" stroke-width="0.6" stroke-dasharray="3,3" rx="2"/>`;
+      svg+=`<text x="${ox+rzW*0.3}" y="${oy+bh*0.5+vH/2+3}" text-anchor="middle" fill="rgba(239,68,68,0.5)" font-size="5">1F吹抜 ${vs}㎡</text>`;
+      svg+=`<text x="${ox+4}" y="${oy+bh+8}" fill="rgba(34,197,94,0.3)" font-size="4">動線: EV→EVホール→イベントスペース</text>`;
 
     } else if(isTop){
-      /* === 最上階: EV→EVホール→オフィス(隣接)→テラス(奥) === */
-      svg+=`<rect x="${cX}" y="${hallY}" width="${cW}" height="${hallH}" fill="rgba(100,116,139,0.08)" stroke="rgba(100,116,139,0.2)" stroke-width="0.3" rx="1"/>`;
-      svg+=`<text x="${cX+cW/2}" y="${hallY+hallH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-size="4">EVホール</text>`;
-      /* Office adjacent to core/EV hall */
-      const offY=hallY+hallH+2;
-      const offH=(bh-offY+oy)*0.55;
-      svg+=`<rect x="${ox+2}" y="${offY}" width="${bw-4}" height="${offH}" fill="rgba(59,130,246,0.06)" stroke="rgba(59,130,246,0.18)" stroke-width="0.4" rx="2"/>`;
-      svg+=`<text x="${ox+bw/2}" y="${offY+offH/2+2}" text-anchor="middle" fill="rgba(59,130,246,0.65)" font-size="6" font-weight="600">オフィス 100㎡</text>`;
-      /* Terrace beyond office (west/south) */
-      const terY=offY+offH+2;
-      svg+=`<rect x="${ox+2}" y="${terY}" width="${bw-4}" height="${bh-terY+oy-2}" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.12)" stroke-width="0.4" stroke-dasharray="3,2" rx="2"/>`;
-      svg+=`<text x="${ox+bw/2}" y="${terY+(bh-terY+oy)/2}" text-anchor="middle" fill="rgba(34,197,94,0.5)" font-size="6">テラス</text>`;
-      svg+=`<text x="${ox+4}" y="${oy+bh+8}" fill="rgba(59,130,246,0.35)" font-size="4">動線: EV→オフィス→テラス(奥)</text>`;
+      const rzW=roomNS*scX;
+      const offH=bh*0.55;
+      svg+=`<rect x="${ox+2}" y="${oy+2}" width="${rzW-4}" height="${offH}" fill="rgba(59,130,246,0.05)" stroke="rgba(59,130,246,0.15)" stroke-width="0.3" rx="2"/>`;
+      svg+=`<text x="${ox+rzW/2}" y="${oy+offH/2}" text-anchor="middle" fill="rgba(59,130,246,0.6)" font-size="6" font-weight="600">オフィス 100㎡</text>`;
+      svg+=`<rect x="${ox+2}" y="${oy+offH+4}" width="${rzW-4}" height="${bh-offH-6}" fill="rgba(34,197,94,0.03)" stroke="rgba(34,197,94,0.1)" stroke-width="0.3" stroke-dasharray="3,2" rx="2"/>`;
+      svg+=`<text x="${ox+rzW/2}" y="${oy+offH+4+(bh-offH-6)/2}" text-anchor="middle" fill="rgba(34,197,94,0.45)" font-size="6">テラス</text>`;
+      svg+=`<text x="${ox+4}" y="${oy+bh+8}" fill="rgba(59,130,246,0.3)" font-size="4">動線: EV→オフィス(隣接)→テラス(奥)</text>`;
 
     } else if(isGF){
-      /* === 客室階: EV→EVホール→廊下(W方向)→客室(N/S両側) === */
-      /* EV Hall (below core) */
-      svg+=`<rect x="${cX}" y="${hallY}" width="${cW}" height="${hallH}" fill="rgba(100,116,139,0.08)" stroke="rgba(100,116,139,0.2)" stroke-width="0.3" rx="1"/>`;
-      svg+=`<text x="${cX+cW/2}" y="${hallY+hallH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-size="4">EVホール</text>`;
-      /* Corridor runs west from EV hall (top→bottom in SVG = east→west in building) */
-      const corrY=hallY+hallH;
-      const corrH=bh-(corrY-oy);
-      /* Rooms on north and south sides of building, west of core */
+      /* === GUEST FLOOR: Strip-Packing Algorithm === */
       const rooms=fl.rooms;
-      const roomZoneW=EW-CORE.ew-corridorW;/* available EW depth for rooms */
-      /* Split: north rooms and south rooms */
-      let northX=0, southX=0;
-      const northBase=ox;/* north = left in SVG */
-      const southBase=ox+bw/2+1;/* south = right side, but avoiding core */
-      const availNS_N=coreNSpos;/* NS space north of core */
-      const availNS_S=ns-coreNSpos-CORE.ns;/* NS space south of core */
-      /* Corridor runs vertically (E-W) from EVhall downward */
-      const corrX=cX+cW/2-corridorW*scX/2;
-      const corrStartY=hallY+hallH;
-      svg+=`<rect x="${corrX}" y="${corrStartY}" width="${corridorW*scX}" height="${bh-(corrStartY-oy)}" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.1)" stroke-width="0.3" stroke-dasharray="2,2" rx="1"/>`;
-      svg+=`<text x="${corrX+corridorW*scX/2}" y="${corrStartY+(bh-(corrStartY-oy))/2}" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-size="4" transform="rotate(-90,${corrX+corridorW*scX/2},${corrStartY+(bh-(corrStartY-oy))/2})">廊下 1.6m</text>`;
+      const rzW=roomNS*scX;/* total room zone width in px */
 
-      /* Place rooms: north side (left of core) and south side (right of core) */
-      let nY=oy+1, sY=oy+1;
+      /* Draw corridor */
+      svg+=`<rect x="${ox}" y="${corrY}" width="${rzW}" height="${corrH}" fill="rgba(148,163,184,0.04)" stroke="rgba(148,163,184,0.08)" stroke-width="0.3" stroke-dasharray="2,2" rx="1"/>`;
+      svg+=`<text x="${ox+rzW/2}" y="${corrY+corrH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.25)" font-size="4">廊下 ${CORR}m</text>`;
+
+      /* Strip-packing: place rooms sequentially in east strip, overflow to west */
+      let eastCursor=0;/* meters consumed in east strip */
+      let westCursor=0;/* meters consumed in west strip */
+
       rooms.forEach(r=>{
-        const area=r.a, rFront=area/roomD;
+        const area=r.a;
+        const frontage=area/ROOM_D;/* room width along corridor (meters) */
         const isST=r.t==='ST', isCP=r.t==='CP';
         const fill=isST?'rgba(180,83,9,0.09)':isCP?'rgba(139,92,246,0.06)':'rgba(59,130,246,0.06)';
-        const stroke=isST?'rgba(180,83,9,0.35)':isCP?'rgba(139,92,246,0.28)':'rgba(59,130,246,0.28)';
-        const txtC=isST?'rgba(180,83,9,0.75)':isCP?'rgba(139,92,246,0.65)':'rgba(59,130,246,0.65)';
+        const stroke=isST?'rgba(180,83,9,0.35)':isCP?'rgba(139,92,246,0.25)':'rgba(59,130,246,0.25)';
+        const txtC=isST?'rgba(180,83,9,0.75)':isCP?'rgba(139,92,246,0.6)':'rgba(59,130,246,0.6)';
         const lb=isST?`Suite ${area}㎡`:isCP?`CP ${area}㎡`:`SD ${area}㎡`;
-        const rfPx=rFront*scX;/* room frontage in px (along NS) */
-        const rdPx=bh-(corrStartY-oy);/* room depth = full remaining EW */
 
-        if(nY-oy+rFront*scY <= coreNSpos*scX+1){
-          /* North side (left of corridor in SVG) */
-          const rx=ox+1;
-          const ry=nY;
-          const rw=cX-ox-corridorW*scX/2-2;/* width to corridor */
-          const rh=rFront*scY-2;
+        if(eastCursor+frontage<=roomNS+0.01){
+          /* Place on EAST strip (top, road side) */
+          const rx=ox+eastCursor*scX+1;
+          const ry=eastY+1;
+          const rw=frontage*scX-2;
+          const rh=eastH-2;
           svg+=`<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="${fill}" stroke="${stroke}" stroke-width="0.5" rx="1"/>`;
           svg+=`<text x="${rx+rw/2}" y="${ry+rh/2+1}" text-anchor="middle" fill="${txtC}" font-size="${isST?6:5}" font-weight="${isST?700:500}">${lb}</text>`;
-          nY+=rFront*scY;
-        } else {
-          /* South side (right of core) */
-          const rx=cX+cW+1;
-          const ry=sY;
-          const rw=bw-(cX+cW-ox)-2;/* width from core to south wall */
-          const rh=rFront*scY-2;
+          eastCursor+=frontage;
+        } else if(westCursor+frontage<=roomNS+0.01){
+          /* Place on WEST strip (bottom) */
+          const rx=ox+westCursor*scX+1;
+          const ry=westY+1;
+          const rw=frontage*scX-2;
+          const rh=westH-2;
           svg+=`<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="${fill}" stroke="${stroke}" stroke-width="0.5" rx="1"/>`;
           svg+=`<text x="${rx+rw/2}" y="${ry+rh/2+1}" text-anchor="middle" fill="${txtC}" font-size="${isST?6:5}" font-weight="${isST?700:500}">${lb}</text>`;
-          sY+=rFront*scY;
+          westCursor+=frontage;
         }
       });
-      /* Linen */
-      const linW=2*scX, linH=1.2*scY;
-      svg+=`<rect x="${cX+cW-linW-1}" y="${hallY+hallH-linH-1}" width="${linW}" height="${linH}" fill="rgba(245,158,11,0.05)" stroke="rgba(245,158,11,0.2)" stroke-width="0.3" rx="1"/>`;
-      svg+=`<text x="${cX+cW-linW/2-1}" y="${hallY+hallH-linH/2}" text-anchor="middle" fill="rgba(245,158,11,0.5)" font-size="3">リネン</text>`;
-      /* Walking distance + sequence */
-      const maxWalk=Math.max(coreNSpos, ns-coreNSpos-CORE.ns).toFixed(1);
-      svg+=`<text x="${ox+bw/2}" y="${oy+bh+8}" text-anchor="middle" fill="rgba(239,68,68,0.55)" font-size="5">歩行距離 ${maxWalk}m ≤50m ✓</text>`;
-      svg+=`<text x="${ox+4}" y="${oy+bh+16}" fill="rgba(59,130,246,0.35)" font-size="4">動線: EV→EVホール→廊下(W)→客室</text>`;
+      /* Linen room in remaining east or west strip space */
+      const linFront=2.0;/* 2m frontage */
+      if(eastCursor+linFront<=roomNS){
+        const lx=ox+eastCursor*scX+1, ly=eastY+1;
+        svg+=`<rect x="${lx}" y="${ly}" width="${linFront*scX-2}" height="${eastH-2}" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.15)" stroke-width="0.3" rx="1"/>`;
+        svg+=`<text x="${lx+linFront*scX/2}" y="${ly+eastH/2}" text-anchor="middle" fill="rgba(245,158,11,0.45)" font-size="3">リネン</text>`;
+      }
+      /* Walking distance */
+      const maxWalk=Math.max(eastCursor,westCursor).toFixed(1);
+      svg+=`<text x="${ox+rzW/2}" y="${oy+bh+8}" text-anchor="middle" fill="rgba(239,68,68,0.5)" font-size="5">歩行距離 ${maxWalk}m ≤50m ✓</text>`;
+      svg+=`<text x="${ox+4}" y="${oy+bh+16}" fill="rgba(59,130,246,0.3)" font-size="4">動線: EV→廊下→客室(E/W両側)</text>`;
     }
 
-    /* Dimension */
-    svg+=`<line x1="${ox}" y1="${oy-4}" x2="${ox+bw}" y2="${oy-4}" stroke="var(--dim)" stroke-width="0.3"/>`;
-    svg+=`<text x="${ox+bw/2}" y="${oy-7}" text-anchor="middle" fill="var(--dim)" font-size="5">${ns.toFixed(1)}m</text>`;
+    /* Dimension line */
+    svg+=`<line x1="${ox}" y1="${oy-2}" x2="${ox+bw}" y2="${oy-2}" stroke="var(--dim)" stroke-width="0.3"/>`;
+    svg+=`<text x="${ox+bw/2}" y="${oy-5}" text-anchor="middle" fill="var(--dim)" font-size="5">${ns.toFixed(1)}m</text>`;
+    svg+=`<text x="${ox-4}" y="${oy+bh/2}" fill="var(--dim)" font-size="5" transform="rotate(-90,${ox-4},${oy+bh/2})" text-anchor="middle">${EW}m</text>`;
 
     const div=document.createElement('div');div.className='site-plan';
-    const fd=is1F?'ロビー・駐車・植栽':is2F?'イベント（吹抜）':isTop?'オフィス+テラス':fl.rooms.map(r=>r.t==='ST'?'Suite'+r.a:r.t==='CP'?'CP'+r.a:'SD'+r.a).join('+');
+    const fd=is1F?'ロビー・駐車':is2F?'イベント（吹抜）':isTop?'オフィス+テラス':fl.rooms.map(r=>r.t==='ST'?'Suite'+r.a:r.t==='CP'?'CP'+r.a:'SD'+r.a).join('+');
     div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${defs}${svg}</svg><div class="site-plan-label" style="color:${o.c.m};font-size:.78rem">${o.name} ${fl.f}</div><div class="site-plan-sub">${fd}</div>`;
     el.appendChild(div);
   });
