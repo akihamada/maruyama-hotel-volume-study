@@ -514,12 +514,12 @@ const CONFIG = {
 /** Color palette — 3案 */
 const C={a:{m:'#ff6b8a',bg:'rgba(255,107,138,0.2)',b:'rgba(255,107,138,0.8)'},b:{m:'#4ecdc4',bg:'rgba(78,205,196,0.2)',b:'rgba(78,205,196,0.8)'},c:{m:'#a855f7',bg:'rgba(168,85,247,0.2)',b:'rgba(168,85,247,0.8)'}};
 const O=[
-  {id:'a',name:'案A',sub:'5F ブティック旅館',c:C.a,floors:[320,240,265,225,100],terraces:[10,15,20,30,130],fn:['1F ロビー・カフェ+ピロティ（大階段）','2F イベントスペース（吹抜80㎡）+ギャラリー','3F 客室','4F 客室','5F オフィス+テラス'],h:18,rooms:8,lic:'旅館',far:88.1,net:900,total:1150,terr:205,n1f:200,park:7,site:87,ceil:4.0,shadow:'◎',coverage:78.7,buildArea:320,uses:{pub:560,guest:490,office:100},adr:75000,
-    roomMix:[{type:'スイート',count:1,area:80,adr:120000},{type:'スタンダード',count:7,area:40,adr:68000}],concept:'1-2F大階段＆吹抜けイベント空間。全室40㎡超の8室旅館。計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ+ピロティ4台+G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（吹抜80㎡）+ギャラリー',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:80},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'5F',use:'オフィス100㎡+テラス',rooms:[]}]},
-  {id:'b',name:'案B',sub:'6F バランス',c:C.b,floors:[280,200,230,220,210,100],terraces:[10,15,15,15,20,85],fn:['1F ロビー・カフェ+屋内G（大階段）','2F イベントスペース（吹抜60㎡）+カフェ','3F 客室','4F 客室','5F 客室','6F オフィス+テラス'],h:22,rooms:10,lic:'旅館',far:91.8,net:960,total:1240,terr:160,n1f:215,park:7,site:127,ceil:4.0,shadow:'○',coverage:68.8,buildArea:280,uses:{pub:480,guest:660,office:100},adr:60000,
-    roomMix:[{type:'スイート',count:1,area:65,adr:95000},{type:'スタンダード',count:9,area:40,adr:56000}],concept:'1-2F大階段＆吹抜けイベント。全室40㎡以上の10室旅館。計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ+屋内G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（吹抜60㎡）+カフェ',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:65},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'5F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'6F',use:'オフィス100㎡+テラス',rooms:[]}]},
-  {id:'c',name:'案C',sub:'7F タワー',c:C.c,floors:[245,180,195,180,165,155,100],terraces:[10,10,15,15,20,25,85],fn:['1F ロビー+屋内G（大階段）','2F イベントスペース（吹抜50㎡）+ギャラリー','3F 客室','4F 客室','5F 客室','6F 客室','7F オフィス+テラス'],h:25,rooms:13,lic:'ホテル',far:89.3,net:905,total:1220,terr:180,n1f:185,park:7,site:162,ceil:3.5,shadow:'△',coverage:60.2,buildArea:245,uses:{pub:425,guest:695,office:100},adr:48000,
-    roomMix:[{type:'スイート',count:1,area:60,adr:85000},{type:'スタンダード',count:8,area:40,adr:50000},{type:'コンパクト',count:4,area:28,adr:35000}],concept:'1-2F大階段＆吹抜け。4フロア13室で収益最大化。計7台',floorRooms:[{f:'1F',use:'ロビー+屋内G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（吹抜50㎡）+ギャラリー',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'ST',a:60},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'CP',a:28},{t:'CP',a:28}]},{f:'5F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'CP',a:28}]},{f:'6F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'CP',a:28}]},{f:'7F',use:'オフィス100㎡+テラス',rooms:[]}]}
+  {id:'a',name:'案A',sub:'5F ブティック旅館',c:C.a,floors:[320,240,265,225,100],terraces:[10,15,20,30,130],fn:['1F ロビー・カフェ（吹抜DH天井）+ピロティ（大階段）','2F イベントスペース（1F吹抜80㎡）+ギャラリー','3F 客室','4F 客室','5F オフィス+テラス'],h:18,rooms:8,lic:'旅館',far:88.1,net:900,total:1150,terr:205,n1f:200,park:7,site:87,ceil:4.0,shadow:'◎',coverage:78.7,buildArea:320,uses:{pub:560,guest:490,office:100},adr:75000,
+    roomMix:[{type:'スイート',count:1,area:80,adr:120000},{type:'スタンダード',count:7,area:40,adr:68000}],concept:'1F吹抜DH天井+大階段。スイートは最上階客室4Fに配置。全室40㎡超の8室旅館。ピロティ6台+G1台=計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ（吹抜DH天井）+ピロティ6台+G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（1F吹抜80㎡）+ギャラリー',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室（スイート階）',rooms:[{t:'ST',a:80},{t:'SD',a:40},{t:'SD',a:40}]},{f:'5F',use:'オフィス100㎡+テラス',rooms:[]}]},
+  {id:'b',name:'案B',sub:'6F バランス',c:C.b,floors:[280,200,230,220,210,100],terraces:[10,15,15,15,20,85],fn:['1F ロビー・カフェ（吹抜DH天井）+屋内G（大階段）','2F イベントスペース（1F吹抜60㎡）+カフェ','3F 客室','4F 客室','5F 客室','6F オフィス+テラス'],h:22,rooms:10,lic:'旅館',far:91.8,net:960,total:1240,terr:160,n1f:215,park:7,site:127,ceil:4.0,shadow:'○',coverage:68.8,buildArea:280,uses:{pub:480,guest:660,office:100},adr:60000,
+    roomMix:[{type:'スイート',count:1,area:65,adr:95000},{type:'スタンダード',count:9,area:40,adr:56000}],concept:'1F吹抜DH天井+大階段。スイートは最上階客室5Fに配置。全室40㎡以上の10室旅館。計7台',floorRooms:[{f:'1F',use:'ロビー・カフェ（吹抜DH天井）+屋内G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（1F吹抜60㎡）+カフェ',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'5F',use:'客室（スイート階）',rooms:[{t:'ST',a:65},{t:'SD',a:40},{t:'SD',a:40}]},{f:'6F',use:'オフィス100㎡+テラス',rooms:[]}]},
+  {id:'c',name:'案C',sub:'7F タワー',c:C.c,floors:[245,180,195,180,165,155,100],terraces:[10,10,15,15,20,25,85],fn:['1F ロビー（吹抜DH天井）+屋内G（大階段）','2F イベントスペース（1F吹抜50㎡）+ギャラリー','3F 客室','4F 客室','5F 客室','6F 客室','7F オフィス+テラス'],h:25,rooms:13,lic:'ホテル',far:89.3,net:905,total:1220,terr:180,n1f:185,park:7,site:162,ceil:3.5,shadow:'△',coverage:60.2,buildArea:245,uses:{pub:425,guest:695,office:100},adr:48000,
+    roomMix:[{type:'スイート',count:1,area:60,adr:85000},{type:'スタンダード',count:8,area:40,adr:50000},{type:'コンパクト',count:4,area:28,adr:35000}],concept:'1F吹抜DH天井+大階段。スイートは最上階客室6Fに配置。4フロア13室で収益最大化。計7台',floorRooms:[{f:'1F',use:'ロビー（吹抜DH天井）+屋内G1台（大階段）',rooms:[]},{f:'2F',use:'イベントスペース（1F吹抜50㎡）+ギャラリー',rooms:[]},{f:'3F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'SD',a:40}]},{f:'4F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'CP',a:28},{t:'CP',a:28}]},{f:'5F',use:'客室',rooms:[{t:'SD',a:40},{t:'SD',a:40},{t:'CP',a:28}]},{f:'6F',use:'客室（スイート階）',rooms:[{t:'ST',a:60},{t:'SD',a:40},{t:'CP',a:28}]},{f:'7F',use:'オフィス100㎡+テラス',rooms:[]}]}
 ];
 
 /**
@@ -707,7 +707,7 @@ const setbackW=0.5,setbackN=0.5,setbackS=0.5,setbackE=0.27;
 const parkW=2.5,parkD=5.0,aisle=6.0;/* 駐車1台幅,奥行,通路幅 */
 
 /* 各案の駐車配置: surfP=南端地上台数, piloP=ピロティ台数, garP=屋内ガレージ台数 */
-const PK={a:{surfP:2,piloP:4,garP:1},b:{surfP:4,piloP:2,garP:1},c:{surfP:5,piloP:1,garP:1}};
+const PK={a:{surfP:0,piloP:6,garP:1},b:{surfP:4,piloP:2,garP:1},c:{surfP:5,piloP:1,garP:1}};
 
 O.forEach(o=>{
   const W=260,H=190,m=28;/* SVG寸法,マージン */
@@ -822,7 +822,7 @@ O.forEach(o=>{
 !function(){
 const el=document.getElementById('parking1F');
 const depth=13.0;/* 建物E-W奥行(m) */
-const PK={a:{surfP:2,piloP:4,garP:1},b:{surfP:4,piloP:2,garP:1},c:{surfP:5,piloP:1,garP:1}};
+const PK={a:{surfP:0,piloP:6,garP:1},b:{surfP:4,piloP:2,garP:1},c:{surfP:5,piloP:1,garP:1}};
 const pW=2.5,pD=5.0,aisle=6.0,tR=5.3;
 
 O.forEach(o=>{
