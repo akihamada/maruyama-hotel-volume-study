@@ -884,18 +884,34 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
 /** Zoning Study — JSON-Driven Renderer (data from zoning_engine.py + Shapely) */
 !function(){
 const el=document.getElementById('zoningPlans');
-const colors={a:{m:'#f87171'},b:{m:'#34d399'},c:{m:'#c084fc'}};
+const colors={a:{m:'#f87171',bg:'rgba(248,113,113,0.06)'},b:{m:'#34d399',bg:'rgba(52,211,153,0.06)'},c:{m:'#c084fc',bg:'rgba(168,85,247,0.06)'}};
 
 fetch('zoning_data.json').then(r=>r.json()).then(data=>{
   data.options.forEach(opt=>{
     const ns=opt.building_ns, ew=opt.building_ew;
     const c=colors[opt.id];
+    /* Option header */
+    const hdr=document.createElement('div');
+    hdr.style.cssText='width:100%;padding:12px 16px 6px;margin-top:16px;border-top:1px solid var(--glass-border);display:flex;align-items:center;gap:8px';
+    hdr.innerHTML=`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c.m}"></span><span style="font-size:.85rem;font-weight:700;color:${c.m}">${opt.name}</span><span style="font-size:.7rem;color:var(--dim);margin-left:auto">${opt.room_count}室 | ${ns.toFixed(1)}×${ew.toFixed(1)}m</span>`;
+    el.appendChild(hdr);
+
+    const row=document.createElement('div');
+    row.className='site-plan-row';
+    row.style.cssText=`background:${c.bg};border-radius:8px;padding:8px;margin:4px 0 8px`;
+    el.appendChild(row);
+
     opt.floors.forEach(fl=>{
       const W=280,H=360,m=34;
       const scX=(W-m*2)/ew, scY=(H-m*2)/ns;
       const ox=m,oy=m;
       const bw=ew*scX, bh=ns*scY;
       let svg='';
+      /* Road indicator on east side (top of SVG) */
+      svg+=`<rect x="${ox-4}" y="${oy-18}" width="${bw+8}" height="14" fill="rgba(100,100,100,0.1)" stroke="rgba(200,200,200,0.15)" stroke-width="0.5" rx="2"/>`;
+      svg+=`<text x="${ox+bw/2}" y="${oy-8}" text-anchor="middle" fill="rgba(251,191,36,0.6)" font-size="5" font-weight="600">🛣️ 市道（東）</text>`;
+      /* W label on west side (bottom of SVG) */
+      svg+=`<text x="${ox+bw/2}" y="${oy+bh+22}" text-anchor="middle" fill="rgba(34,197,94,0.4)" font-size="4.5">← 西（円山・山側）→</text>`;
       /* Building outline */
       svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="rgba(30,41,59,0.25)" stroke="${c.m}" stroke-width="1.5" rx="2"/>`;
       /* Render elements from JSON — swap x↔y, w↔h for NS-vertical orientation */
@@ -907,14 +923,14 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
         const isDash=e.type==='corridor'||e.type==='void'||e.type==='terrace';
         svg+=`<rect x="${ex}" y="${ey}" width="${ew2}" height="${eh}" fill="${fill}" stroke="${stroke}" stroke-width="${e.type==='core'?0.8:0.5}" rx="${e.type==='core'?2:1}" ${isDash?'stroke-dasharray="3,2"':''}/>`;
         /* Label */
-        const fz=e.type==='room'?5.5:e.type==='ev'||e.type==='stair'||e.type==='ps'?4:e.type==='lobby'||e.type==='event'||e.type==='office'?7:4.5;
+        const fz=e.type==='room'?5:e.type==='ev'||e.type==='stair'||e.type==='ps'?4:e.type==='lobby'||e.type==='event'||e.type==='office'?6:4.2;
         const fw=e.label.includes('Suite')||e.type==='lobby'||e.type==='office'||e.type==='event'?600:500;
         const tc=e.type==='room'?(e.label.includes('Suite')?'rgba(180,83,9,0.75)':e.label.includes('CP')?'rgba(139,92,246,0.6)':'rgba(59,130,246,0.6)'):e.type==='lobby'||e.type==='entrance'?'rgba(249,115,22,0.55)':e.type==='event'?'rgba(34,197,94,0.65)':e.type==='office'?'rgba(59,130,246,0.6)':e.type==='terrace'?'rgba(34,197,94,0.45)':'rgba(148,163,184,0.6)';
         if(ew2>8&&eh>6) svg+=`<text x="${ex+ew2/2}" y="${ey+eh/2+fz*0.3}" text-anchor="middle" fill="${tc}" font-size="${fz}" font-weight="${fw}">${e.label}</text>`;
       });
       /* Dimensions */
       svg+=`<line x1="${ox}" y1="${oy-2}" x2="${ox+bw}" y2="${oy-2}" stroke="var(--dim)" stroke-width="0.3"/>`;
-      svg+=`<text x="${ox+bw/2}" y="${oy-5}" text-anchor="middle" fill="var(--dim)" font-size="5">${ew}m</text>`;
+      svg+=`<text x="${ox+bw/2}" y="${oy-22}" text-anchor="middle" fill="var(--dim)" font-size="5">${ew}m</text>`;
       svg+=`<text x="${ox-4}" y="${oy+bh/2}" fill="var(--dim)" font-size="5" transform="rotate(-90,${ox-4},${oy+bh/2})" text-anchor="middle">${ns.toFixed(1)}m</text>`;
       /* N compass */
       svg+=`<text x="${W-12}" y="14" fill="var(--dim)" font-size="8" font-weight="600">N↑</text>`;
@@ -924,12 +940,12 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
         svg+=`<text x="${ox+bw/2}" y="${oy+bh+8}" text-anchor="middle" fill="rgba(239,68,68,0.5)" font-size="5">歩行距離 ${v.maxWalkM}m ≤50m ${v.walkOk?'✓':'✗'} | ${v.roomCount}室 ${v.totalRoomArea}㎡</text>`;
         svg+=`<text x="${ox+4}" y="${oy+bh+16}" fill="rgba(59,130,246,0.3)" font-size="4">Shapely検証: 包含${v.allContained?'✓':'✗'} 重なり${v.noOverlap?'✓':'✗'}</text>`;
       } else {
-        const seq=fl.use.includes('ロビー')?'道路→エントランス→ロビー→EV↑':fl.use.includes('イベント')?'EV→EVホール→イベントスペース':'EV→オフィス(隣接)→テラス(奥)';
+        const seq=fl.use.includes('ロビー')?'道路(東)→エントランス→ロビー→EV↑':fl.use.includes('イベント')?'EV→EVホール→イベントスペース':'EV→オフィス(隣接)→テラス(奥)';
         svg+=`<text x="${ox+4}" y="${oy+bh+8}" fill="rgba(148,163,184,0.3)" font-size="4">動線: ${seq}</text>`;
       }
       const div=document.createElement('div');div.className='site-plan';
       div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${svg}</svg><div class="site-plan-label" style="color:${c.m};font-size:.78rem">${opt.name.split(' ')[0]} ${fl.name}</div><div class="site-plan-sub">${fl.use}</div>`;
-      el.appendChild(div);
+      row.appendChild(div);
 
     });
   });
