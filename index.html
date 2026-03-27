@@ -803,7 +803,7 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
     svg+=`<text x="${(ox+ox+sW)/2}" y="${H-4}" text-anchor="middle" fill="var(--dim)" font-size="6.5">敷地 ${S.area}㎡</text>`;
     const div=document.createElement('div');div.className='site-plan';
     const cv=sp.validation.coverage;
-    div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${svg}</svg><div class="site-plan-label" style="color:${c.m}">${opt.name}</div><div class="site-plan-sub">建ぺい率 ${cv}% / P${PK.surf}台+ピロティ${PK.pilo}台+G${PK.garage}台</div>`;
+    div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${svg}</svg><div class="site-plan-label" style="color:${c.m}">${opt.name}</div><div class="site-plan-sub">建ぺい率 ${cv}% / 屋内${PK.pilo+PK.garage}台+平面${PK.surf}台</div>`;
     el.appendChild(div);
   });
 });
@@ -880,7 +880,7 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
     /* N compass */
     svg+=`<text x="${W-18}" y="18" fill="var(--dim)" font-size="12" font-weight="600">N↑</text>`;
     const div=document.createElement('div');div.className='site-plan';
-    div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${defs}${svg}</svg><div class="site-plan-label" style="color:${c.m};font-size:.9rem">${opt.name} — 1F配置図</div><div class="site-plan-sub" style="font-size:.75rem">計${pd.totalParking}台: ${pd.piloti.label} + 屋内G1台 + ${pd.surfParking.label}</div>`;
+    div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${defs}${svg}</svg><div class="site-plan-label" style="color:${c.m};font-size:.9rem">${opt.name} — 1F配置図</div><div class="site-plan-sub" style="font-size:.75rem">計${pd.totalParking}台: ${pd.indoorParking.label} + ${pd.surfParking.label}</div>`;
     el.appendChild(div);
   });
 });
