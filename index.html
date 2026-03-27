@@ -767,20 +767,16 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
     svg+=`<rect x="${bx}" y="${by_}" width="${bw}" height="${bh}" fill="${c.m}" opacity="0.25" stroke="${c.m}" stroke-width="1.5" rx="3"/>`;
     svg+=`<text x="${bx+bw/2}" y="${by_+bh/2-4}" text-anchor="middle" fill="${c.m}" font-size="9" font-weight="700">${opt.name}</text>`;
     svg+=`<text x="${bx+bw/2}" y="${by_+bh/2+7}" text-anchor="middle" fill="${c.m}" font-size="7">${opt.building_ns*opt.building_ew}㎡</text>`;
-    /* Piloti parking (inside building) */
-    if(PK.pilo>0){
-      const piloW=PK.pilo*2.5*sc, piloH=5.0*sc;
-      const piloX=bx+bw-piloW-2, piloY=by_+bh-piloH-2;
+    /* Indoor parking (unified G+piloti, oriented along NS axis) */
+    const totalIndoor=PK.pilo+PK.garage;
+    if(totalIndoor>0){
+      const piloW=5.0*sc;  /* stall depth along EW (horizontal) */
+      const piloH=Math.min(totalIndoor*2.5*sc, bh*0.45);  /* stalls along NS (vertical), capped */
+      const piloX=bx+2, piloY=by_+bh-piloH-2;
       svg+=`<rect x="${piloX}" y="${piloY}" width="${piloW}" height="${piloH}" fill="rgba(168,85,247,0.2)" stroke="rgba(168,85,247,0.6)" stroke-width="0.8" rx="2" stroke-dasharray="2,1"/>`;
-      svg+=`<text x="${piloX+piloW/2}" y="${piloY+piloH/2+3}" text-anchor="middle" fill="rgba(168,85,247,0.9)" font-size="6" font-weight="500">ピロティ${PK.pilo}台</text>`;
+      svg+=`<text x="${piloX+piloW/2}" y="${piloY+piloH/2+3}" text-anchor="middle" fill="rgba(168,85,247,0.9)" font-size="5" font-weight="500">屋内${totalIndoor}台</text>`;
     }
-    /* Garage */
-    if(PK.garage>0){
-      const gW=3.0*sc, gH=5.0*sc;
-      const gX=bx+bw-gW-1, gY=by_+2;
-      svg+=`<rect x="${gX}" y="${gY}" width="${gW}" height="${gH}" fill="rgba(255,190,11,0.2)" stroke="rgba(255,190,11,0.6)" stroke-width="0.8" rx="2"/>`;
-      svg+=`<text x="${gX+gW/2}" y="${gY+gH/2+3}" text-anchor="middle" fill="rgba(255,190,11,0.9)" font-size="5" font-weight="500">G</text>`;
-    }
+
     /* Surface parking */
     if(PK.surf>0 && PK.surfZone){
       const sz=PK.surfZone;
