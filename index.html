@@ -733,234 +733,156 @@ row.appendChild(d)})}();
 new Chart(document.getElementById('coverageChart'),{type:'bar',data:{labels:O.map(o=>o.name),datasets:[{label:'建ぺい率 (%)',data:O.map(o=>o.coverage),backgroundColor:O.map(o=>o.c.bg),borderColor:O.map(o=>o.c.b),borderWidth:1.5}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{min:0,max:85,grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'},color:O.map(o=>o.c.m)}}},plugins:{legend:{display:false},annotation:{annotations:{limit:{type:'line',xMin:80,xMax:80,borderColor:'#ef4444',borderWidth:1.5,borderDash:[4,3],label:{display:true,content:'上限80%',position:'end',font:{size:9},color:'#ef4444',backgroundColor:'transparent'}}}}}}});
 new Chart(document.getElementById('farChart'),{type:'bar',data:{labels:O.map(o=>o.name),datasets:[{label:'容積率使用率 (%)',data:O.map(o=>o.far),backgroundColor:O.map(o=>o.c.bg),borderColor:O.map(o=>o.c.b),borderWidth:1.5}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{min:0,max:105,grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{size:11,weight:'bold'},color:O.map(o=>o.c.m)}}},plugins:{legend:{display:false},annotation:{annotations:{limit:{type:'line',xMin:100,xMax:100,borderColor:'#ef4444',borderWidth:1.5,borderDash:[4,3],label:{display:true,content:'上限100%',position:'end',font:{size:9},color:'#ef4444',backgroundColor:'transparent'}}}}}}});
 
-/** Site Plans — 実測ベース台形敷地 + 駐車レイアウト */
+/** Site Plans — JSON-Driven from zoning_engine.py */
 !function(){
 const el=document.getElementById('sitePlans');
-/* 実測寸法 (m) — 東=道路, 北/南=隣地, 西=裏 */
-const SITE={eLen:30.136,nLen:13.771,wLen:28.939,sLen:13.771,area:406.89};
-/* 台形近似: 東西が縦(長辺), 北南が横(短辺=奥行) */
-const depth=13.77;/* E-W平均奥行 */
-const setbackW=0.5,setbackN=0.5,setbackS=0.5,setbackE=0.27;
-const parkW=2.5,parkD=5.0,aisle=6.0;/* 駐車1台幅,奥行,通路幅 */
+const colors={a:{m:'#f87171'},b:{m:'#34d399'},c:{m:'#c084fc'}};
 
-/* 各案の駐車配置: surfP=南端地上台数, piloP=ピロティ台数, garP=屋内ガレージ台数 */
-const PK={a:{surfP:0,piloP:6,garP:1},b:{surfP:4,piloP:2,garP:1},c:{surfP:5,piloP:1,garP:1}};
-
-O.forEach(o=>{
-  const W=260,H=190,m=28;/* SVG寸法,マージン */
-  const sc=Math.min((W-m*2)/depth,(H-m*2)/SITE.eLen);
-  /* 描画座標系: x=E-W(右が東=道路), y=N-S(下がS) */
-  const sW=depth*sc,sH_e=SITE.eLen*sc,sH_w=SITE.wLen*sc;
-  const ox=m,oy=m+(sH_e<H-m*2?(H-m*2-sH_e)/2:0);
-  /* 台形4頂点: NW,NE,SE,SW */
-  const diff=(SITE.eLen-SITE.wLen)/2;
-  const nw={x:ox,y:oy+diff*sc};
-  const ne={x:ox+sW,y:oy};
-  const se={x:ox+sW,y:oy+sH_e};
-  const sw={x:ox,y:oy+diff*sc+sH_w*sc/sc*sc};/* =oy+diff*sc+sH_w */
-  const swY=nw.y+sH_w*sc/sc*sc;/* 西辺の長さ分 */
-  /* 台形path */
-  const sitePath=`M${ne.x},${ne.y} L${se.x},${se.y} L${ox},${nw.y+SITE.wLen*sc} L${nw.x},${nw.y} Z`;
-
-  let svg='';
-  /* 敷地外形(台形) */
-  svg+=`<path d="${sitePath}" fill="rgba(34,197,94,0.06)" stroke="var(--dim)" stroke-width="1.2" stroke-dasharray="4,2"/>`;
-
-  /* 道路帯(東側) */
-  const rdW=12;
-  svg+=`<rect x="${ne.x}" y="${ne.y}" width="${rdW}" height="${sH_e}" fill="rgba(100,116,139,0.15)" stroke="none"/>`;
-  svg+=`<text x="${ne.x+rdW/2}" y="${ne.y+sH_e/2}" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-size="8" font-weight="600" transform="rotate(90,${ne.x+rdW/2},${ne.y+sH_e/2})">道 路</text>`;
-
-  /* 寸法線 */
-  const dOff=7;
-  /* 東辺(道路) */
-  svg+=`<line x1="${ne.x+rdW+3}" y1="${ne.y}" x2="${ne.x+rdW+3}" y2="${se.y}" stroke="var(--dim)" stroke-width="0.5" marker-start="url(#arr)" marker-end="url(#arr)"/>`;
-  svg+=`<text x="${ne.x+rdW+6}" y="${ne.y+sH_e/2}" fill="var(--dim)" font-size="6" transform="rotate(90,${ne.x+rdW+6},${ne.y+sH_e/2})" text-anchor="middle">30,136</text>`;
-  /* 北辺 */
-  svg+=`<line x1="${nw.x}" y1="${nw.y-dOff}" x2="${ne.x}" y2="${ne.y-dOff}" stroke="var(--dim)" stroke-width="0.5"/>`;
-  svg+=`<text x="${(nw.x+ne.x)/2}" y="${Math.min(nw.y,ne.y)-dOff-2}" fill="var(--dim)" font-size="6" text-anchor="middle">13,771</text>`;
-  /* 南辺 */
-  const swBottomY=nw.y+SITE.wLen*sc;
-  svg+=`<line x1="${ox}" y1="${swBottomY+dOff}" x2="${se.x}" y2="${se.y+dOff}" stroke="var(--dim)" stroke-width="0.5"/>`;
-  svg+=`<text x="${(ox+se.x)/2}" y="${Math.max(swBottomY,se.y)+dOff+8}" fill="var(--dim)" font-size="6" text-anchor="middle">13,771</text>`;
-  /* 西辺 */
-  svg+=`<line x1="${nw.x-dOff}" y1="${nw.y}" x2="${ox-dOff}" y2="${swBottomY}" stroke="var(--dim)" stroke-width="0.5"/>`;
-  svg+=`<text x="${nw.x-dOff-2}" y="${(nw.y+swBottomY)/2}" fill="var(--dim)" font-size="6" transform="rotate(-90,${nw.x-dOff-2},${(nw.y+swBottomY)/2})" text-anchor="middle">28,939</text>`;
-
-  /* 建物フットプリント: E-W=buildDepth(13m), N-S=buildArea/buildDepth */
-  const buildDepth=depth-setbackW-setbackE;/* ~13.0m */
-  const buildNS=o.buildArea/buildDepth;
-  const bx=ox+setbackE*sc;
-  const by=ne.y+((SITE.eLen-buildNS)/2-1)*sc;/* 北寄り配置(南に駐車場スペース) */
-  const bw=buildDepth*sc;
-  const bh=buildNS*sc;
-  /* 建物Y: 北壁セットバック0.5m */
-  const byAdj=ne.y+setbackN*sc;
-  const bhAdj=buildNS*sc;
-  svg+=`<rect x="${bx}" y="${byAdj}" width="${bw}" height="${bhAdj}" fill="${o.c.m}" opacity="0.25" stroke="${o.c.m}" stroke-width="1.5" rx="3"/>`;
-  svg+=`<text x="${bx+bw/2}" y="${byAdj+bhAdj/2-4}" text-anchor="middle" fill="${o.c.m}" font-size="9" font-weight="700">${o.name}</text>`;
-  svg+=`<text x="${bx+bw/2}" y="${byAdj+bhAdj/2+7}" text-anchor="middle" fill="${o.c.m}" font-size="7">${o.buildArea}㎡</text>`;
-
-  /* ピロティ表示(建物1F東側) */
-  const pk=PK[o.id];
-  if(pk.piloP>0){
-    const piloW=pk.piloP*parkW*sc;
-    const piloH=parkD*sc;
-    const piloX=bx+bw-piloW-2;
-    const piloY=byAdj+bhAdj-piloH-2;
-    svg+=`<rect x="${piloX}" y="${piloY}" width="${piloW}" height="${piloH}" fill="rgba(168,85,247,0.2)" stroke="rgba(168,85,247,0.6)" stroke-width="0.8" rx="2" stroke-dasharray="2,1"/>`;
-    svg+=`<text x="${piloX+piloW/2}" y="${piloY+piloH/2+3}" text-anchor="middle" fill="rgba(168,85,247,0.9)" font-size="6" font-weight="500">ピロティ${pk.piloP}台</text>`;
-  }
-  /* 屋内ガレージ(建物1F北東角) */
-  if(pk.garP>0){
-    const gW=parkW*sc+2,gH=parkD*sc;
-    const gX=bx+bw-gW-1;
-    const gY=byAdj+2;
-    svg+=`<rect x="${gX}" y="${gY}" width="${gW}" height="${gH}" fill="rgba(255,190,11,0.2)" stroke="rgba(255,190,11,0.6)" stroke-width="0.8" rx="2"/>`;
-    svg+=`<text x="${gX+gW/2}" y="${gY+gH/2+3}" text-anchor="middle" fill="rgba(255,190,11,0.9)" font-size="5" font-weight="500">G</text>`;
-  }
-
-  /* 南端地上駐車エリア */
-  if(pk.surfP>0){
-    const parkStartY=byAdj+bhAdj+aisle*sc*0.3;/* 建物南端+少し余白 */
-    const aisleY=parkStartY;
-    const aisleH=aisle*sc*0.5;
-    /* 通路 */
-    svg+=`<rect x="${bx}" y="${aisleY}" width="${bw}" height="${aisleH}" fill="rgba(100,116,139,0.1)" stroke="rgba(100,116,139,0.3)" stroke-width="0.5" rx="1" stroke-dasharray="3,2"/>`;
-    svg+=`<text x="${bx+bw/2}" y="${aisleY+aisleH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.6)" font-size="5">車路 6.0m</text>`;
-    /* 個別駐車枠 */
-    const pY=aisleY+aisleH;
-    const pH=parkD*sc*0.5;
-    const totalPW=pk.surfP*parkW*sc;
-    const pStartX=bx+bw-totalPW;/* 東(道路)寄りに配置 */
-    for(let i=0;i<pk.surfP;i++){
-      const px=pStartX+i*parkW*sc;
-      svg+=`<rect x="${px}" y="${pY}" width="${parkW*sc-1}" height="${pH}" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.5)" stroke-width="0.7" rx="1"/>`;
+fetch('zoning_data.json').then(r=>r.json()).then(data=>{
+  data.options.forEach(opt=>{
+    const sp=opt.sitePlan;
+    const S=sp.site, B=sp.building, PK=sp.parking;
+    const c=colors[opt.id];
+    const W=260,H=190,m=28;
+    const depth=S.nLen;
+    const sc=Math.min((W-m*2)/depth,(H-m*2)/S.eLen);
+    const ox=m,oy=m;
+    const sW=depth*sc, sH=S.eLen*sc;
+    let svg='';
+    /* Site outline (trapezoid approx) */
+    const diff=(S.eLen-S.wLen)/2;
+    const nwY=oy+diff*sc, swY=nwY+S.wLen*sc;
+    const sitePath=`M${ox+sW},${oy} L${ox+sW},${oy+sH} L${ox},${swY} L${ox},${nwY} Z`;
+    svg+=`<path d="${sitePath}" fill="rgba(34,197,94,0.06)" stroke="var(--dim)" stroke-width="1.2" stroke-dasharray="4,2"/>`;
+    /* Road (east side) */
+    const rdW=12;
+    svg+=`<rect x="${ox+sW}" y="${oy}" width="${rdW}" height="${sH}" fill="rgba(100,116,139,0.15)"/>`;
+    svg+=`<text x="${ox+sW+rdW/2}" y="${oy+sH/2}" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-size="8" font-weight="600" transform="rotate(90,${ox+sW+rdW/2},${oy+sH/2})">道 路</text>`;
+    /* Dimensions */
+    svg+=`<line x1="${ox+sW+rdW+3}" y1="${oy}" x2="${ox+sW+rdW+3}" y2="${oy+sH}" stroke="var(--dim)" stroke-width="0.5"/>`;
+    svg+=`<text x="${ox+sW+rdW+6}" y="${oy+sH/2}" fill="var(--dim)" font-size="6" transform="rotate(90,${ox+sW+rdW+6},${oy+sH/2})" text-anchor="middle">30,136</text>`;
+    svg+=`<text x="${(ox+ox+sW)/2}" y="${Math.min(nwY,oy)-6}" fill="var(--dim)" font-size="6" text-anchor="middle">13,771</text>`;
+    /* Building footprint */
+    const bx=ox+B.x*sc, by_=oy+B.y*sc, bw=B.w*sc, bh=B.h*sc;
+    svg+=`<rect x="${bx}" y="${by_}" width="${bw}" height="${bh}" fill="${c.m}" opacity="0.25" stroke="${c.m}" stroke-width="1.5" rx="3"/>`;
+    svg+=`<text x="${bx+bw/2}" y="${by_+bh/2-4}" text-anchor="middle" fill="${c.m}" font-size="9" font-weight="700">${opt.name}</text>`;
+    svg+=`<text x="${bx+bw/2}" y="${by_+bh/2+7}" text-anchor="middle" fill="${c.m}" font-size="7">${opt.building_ns*opt.building_ew}㎡</text>`;
+    /* Piloti parking (inside building) */
+    if(PK.pilo>0){
+      const piloW=PK.pilo*2.5*sc, piloH=5.0*sc;
+      const piloX=bx+bw-piloW-2, piloY=by_+bh-piloH-2;
+      svg+=`<rect x="${piloX}" y="${piloY}" width="${piloW}" height="${piloH}" fill="rgba(168,85,247,0.2)" stroke="rgba(168,85,247,0.6)" stroke-width="0.8" rx="2" stroke-dasharray="2,1"/>`;
+      svg+=`<text x="${piloX+piloW/2}" y="${piloY+piloH/2+3}" text-anchor="middle" fill="rgba(168,85,247,0.9)" font-size="6" font-weight="500">ピロティ${PK.pilo}台</text>`;
     }
-    svg+=`<text x="${pStartX+totalPW/2}" y="${pY+pH+8}" text-anchor="middle" fill="rgba(59,130,246,0.8)" font-size="6" font-weight="500">平面P ${pk.surfP}台</text>`;
-  }
-
-  /* 方位(N矢印) */
-  svg+=`<text x="${W-14}" y="${14}" fill="var(--dim)" font-size="9" font-weight="600">N↑</text>`;
-  /* 面積ラベル */
-  svg+=`<text x="${(ox+ne.x)/2}" y="${H-4}" text-anchor="middle" fill="var(--dim)" font-size="6.5">敷地 406.89㎡</text>`;
-
-  /* arrow marker definition */
-  const defs=`<defs><marker id="arr" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4" fill="none" stroke="var(--dim)" stroke-width="0.5"/></marker></defs>`;
-
-  const div=document.createElement('div');div.className='site-plan';
-  const greenArea=SITE.area-o.buildArea-pk.surfP*parkW*parkD;
-  div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${defs}${svg}</svg><div class="site-plan-label" style="color:${o.c.m}">${o.name}</div><div class="site-plan-sub">建ぺい率 ${o.coverage.toFixed(1)}% / P${pk.surfP}台+ピロティ${pk.piloP}台+G${pk.garP}台</div>`;
-  el.appendChild(div);
+    /* Garage */
+    if(PK.garage>0){
+      const gW=3.0*sc, gH=5.0*sc;
+      const gX=bx+bw-gW-1, gY=by_+2;
+      svg+=`<rect x="${gX}" y="${gY}" width="${gW}" height="${gH}" fill="rgba(255,190,11,0.2)" stroke="rgba(255,190,11,0.6)" stroke-width="0.8" rx="2"/>`;
+      svg+=`<text x="${gX+gW/2}" y="${gY+gH/2+3}" text-anchor="middle" fill="rgba(255,190,11,0.9)" font-size="5" font-weight="500">G</text>`;
+    }
+    /* Surface parking */
+    if(PK.surf>0 && PK.surfZone){
+      const sz=PK.surfZone;
+      const aisleY=by_+bh+4, aisleH=6.0*sc*0.3;
+      svg+=`<rect x="${bx}" y="${aisleY}" width="${bw}" height="${aisleH}" fill="rgba(100,116,139,0.1)" stroke="rgba(100,116,139,0.3)" stroke-width="0.5" rx="1" stroke-dasharray="3,2"/>`;
+      svg+=`<text x="${bx+bw/2}" y="${aisleY+aisleH/2+2}" text-anchor="middle" fill="rgba(148,163,184,0.6)" font-size="5">車路 6.0m</text>`;
+      const pY=aisleY+aisleH, pH=5.0*sc*0.5;
+      const totalPW=PK.surf*2.5*sc;
+      const pStartX=bx+bw-totalPW;
+      for(let i=0;i<PK.surf;i++){
+        const px=pStartX+i*2.5*sc;
+        svg+=`<rect x="${px}" y="${pY}" width="${2.5*sc-1}" height="${pH}" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.5)" stroke-width="0.7" rx="1"/>`;
+      }
+      svg+=`<text x="${pStartX+totalPW/2}" y="${pY+pH+8}" text-anchor="middle" fill="rgba(59,130,246,0.8)" font-size="6" font-weight="500">平面P ${PK.surf}台</text>`;
+    }
+    /* Landscaping dots */
+    for(let i=0;i<Math.floor(bw/12);i++) svg+=`<circle cx="${bx+6+i*12}" cy="${by_-3}" r="1.5" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.2)" stroke-width="0.3"/>`;
+    /* N arrow + area */
+    svg+=`<text x="${W-14}" y="14" fill="var(--dim)" font-size="9" font-weight="600">N↑</text>`;
+    svg+=`<text x="${(ox+ox+sW)/2}" y="${H-4}" text-anchor="middle" fill="var(--dim)" font-size="6.5">敷地 ${S.area}㎡</text>`;
+    const div=document.createElement('div');div.className='site-plan';
+    const cv=sp.validation.coverage;
+    div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${svg}</svg><div class="site-plan-label" style="color:${c.m}">${opt.name}</div><div class="site-plan-sub">建ぺい率 ${cv}% / P${PK.surf}台+ピロティ${PK.pilo}台+G${PK.garage}台</div>`;
+    el.appendChild(div);
+  });
 });
 }();
 
-/** 1F Parking Detail — 回転半径・通路・駐車枠の詳細図 */
+/** 1F Parking Detail — JSON-Driven from zoning_engine.py */
 !function(){
 const el=document.getElementById('parking1F');
-const depth=13.0;/* 建物E-W奥行(m) */
-const PK={a:{surfP:0,piloP:6,garP:1},b:{surfP:4,piloP:2,garP:1},c:{surfP:5,piloP:1,garP:1}};
-const pW=2.5,pD=5.0,aisle=6.0,tR=5.3;
+const colors={a:{m:'#f87171'},b:{m:'#34d399'},c:{m:'#c084fc'}};
 
-O.forEach(o=>{
-  const pk=PK[o.id];
-  const bNS=o.buildArea/depth;
-  const W=500,H=340,m=44;
-  const totalNS=bNS+10;
-  const sc=Math.min((W-m*2)/depth,(H-m*2)/totalNS);
-  const ox=m+10,oy=m;
-  const bw=depth*sc,bh=bNS*sc;
-
-  let svg='';
-  const defs=`<defs><marker id="arw${o.id}" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(239,68,68,0.7)"/></marker></defs>`;
-
-  /* 建物外形 */
-  svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="none" stroke="${o.c.m}" stroke-width="2" rx="4"/>`;
-
-  /* ロビー/パブリック */
-  const lobbyH=(bNS-pk.piloP*pW-pD)*sc;
-  const lobbyMinH=Math.max(lobbyH,bh*0.5);
-  svg+=`<rect x="${ox+2}" y="${oy+2}" width="${bw-4}" height="${lobbyMinH-4}" fill="rgba(249,115,22,0.12)" stroke="rgba(249,115,22,0.35)" stroke-width="1" rx="3"/>`;
-  svg+=`<text x="${ox+bw/2}" y="${oy+lobbyMinH/2-2}" text-anchor="middle" fill="rgba(249,115,22,0.85)" font-size="13" font-weight="600">ロビー・パブリック</text>`;
-  svg+=`<text x="${ox+bw/2}" y="${oy+lobbyMinH/2+14}" text-anchor="middle" fill="rgba(249,115,22,0.6)" font-size="10">${o.n1f}㎡</text>`;
-
-  /* 屋内ガレージ */
-  const gW=(pW+0.5)*sc,gH=(pD+1.0)*sc;
-  const gX=ox+bw-gW-3,gY=oy+lobbyMinH;
-  svg+=`<rect x="${gX}" y="${gY}" width="${gW}" height="${gH}" fill="rgba(255,190,11,0.15)" stroke="rgba(255,190,11,0.6)" stroke-width="1.2" rx="3"/>`;
-  svg+=`<text x="${gX+gW/2}" y="${gY+gH/2-3}" text-anchor="middle" fill="rgba(255,190,11,0.9)" font-size="10" font-weight="600">屋内G</text>`;
-  svg+=`<text x="${gX+gW/2}" y="${gY+gH/2+10}" text-anchor="middle" fill="rgba(255,190,11,0.7)" font-size="8">3.0×6.0m</text>`;
-
-  /* ピロティ */
-  if(pk.piloP>0){
-    const piloTotalW=pk.piloP*pW*sc;
-    const piloH=pD*sc;
-    const piloX=ox+3;
-    const piloY=oy+bh-piloH-3;
-    for(let i=0;i<pk.piloP;i++){
-      const px=piloX+i*pW*sc;
-      svg+=`<rect x="${px}" y="${piloY}" width="${pW*sc-2}" height="${piloH}" fill="rgba(168,85,247,0.12)" stroke="rgba(168,85,247,0.5)" stroke-width="1" rx="2"/>`;
-      svg+=`<text x="${px+pW*sc/2-1}" y="${piloY+piloH/2+3}" text-anchor="middle" fill="rgba(168,85,247,0.8)" font-size="9">P${i+1}</text>`;
+fetch('zoning_data.json').then(r=>r.json()).then(data=>{
+  data.options.forEach(opt=>{
+    const pd=opt.parkingDetail;
+    const c=colors[opt.id];
+    const bNS=pd.buildingNS, bEW=pd.buildingEW;
+    const W=500,H=340,m=44;
+    const totalNS=bNS+10;
+    const sc=Math.min((W-m*2)/bEW,(H-m*2)/totalNS);
+    const ox=m+10,oy=m;
+    const bw=bEW*sc, bh=bNS*sc;
+    let svg='';
+    const mkId=`arw${opt.id}`;
+    const defs=`<defs><marker id="${mkId}" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(239,68,68,0.7)"/></marker></defs>`;
+    /* Building outline */
+    svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="none" stroke="${c.m}" stroke-width="2" rx="4"/>`;
+    /* Lobby */
+    const lobbyH=pd.lobby.h*sc;
+    svg+=`<rect x="${ox+2}" y="${oy+2}" width="${bw-4}" height="${lobbyH-4}" fill="rgba(249,115,22,0.12)" stroke="rgba(249,115,22,0.35)" stroke-width="1" rx="3"/>`;
+    svg+=`<text x="${ox+bw/2}" y="${oy+lobbyH/2-2}" text-anchor="middle" fill="rgba(249,115,22,0.85)" font-size="13" font-weight="600">${pd.lobby.label}</text>`;
+    /* Garage */
+    const g=pd.garage;
+    const gX=ox+g.x*sc, gY=oy+g.y*sc, gW=g.w*sc, gH=g.h*sc;
+    svg+=`<rect x="${gX}" y="${oy+lobbyH}" width="${gW}" height="${gH}" fill="rgba(255,190,11,0.15)" stroke="rgba(255,190,11,0.6)" stroke-width="1.2" rx="3"/>`;
+    svg+=`<text x="${gX+gW/2}" y="${oy+lobbyH+gH/2-3}" text-anchor="middle" fill="rgba(255,190,11,0.9)" font-size="10" font-weight="600">屋内G</text>`;
+    svg+=`<text x="${gX+gW/2}" y="${oy+lobbyH+gH/2+10}" text-anchor="middle" fill="rgba(255,190,11,0.7)" font-size="8">3.0×6.0m</text>`;
+    /* Piloti stalls */
+    if(pd.piloti.count>0){
+      pd.piloti.stalls.forEach(s=>{
+        const sx=ox+s.x*sc, sy=oy+s.y*sc, sw=s.w*sc, sh=s.h*sc;
+        svg+=`<rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" fill="rgba(168,85,247,0.12)" stroke="rgba(168,85,247,0.5)" stroke-width="1" rx="2"/>`;
+        svg+=`<text x="${sx+sw/2}" y="${sy+sh/2+3}" text-anchor="middle" fill="rgba(168,85,247,0.8)" font-size="9">${s.label}</text>`;
+      });
+      svg+=`<text x="${ox+bw/2}" y="${oy+bh-6}" text-anchor="middle" fill="rgba(168,85,247,0.9)" font-size="9" font-weight="500">${pd.piloti.label}</text>`;
     }
-    svg+=`<text x="${piloX+piloTotalW/2}" y="${piloY-6}" text-anchor="middle" fill="rgba(168,85,247,0.9)" font-size="9" font-weight="500">ピロティ ${pk.piloP}台 (2.5×5.0m)</text>`;
-  }
-
-  /* 南端・通路 */
-  const aisleY=oy+bh+4;
-  const aisleH=aisle*sc*0.5;
-  svg+=`<rect x="${ox}" y="${aisleY}" width="${bw}" height="${aisleH}" fill="rgba(100,116,139,0.08)" stroke="rgba(100,116,139,0.3)" stroke-width="0.8" rx="2" stroke-dasharray="5,3"/>`;
-  svg+=`<text x="${ox+bw/2}" y="${aisleY+aisleH/2+4}" text-anchor="middle" fill="rgba(148,163,184,0.6)" font-size="9">車路 W=6.0m</text>`;
-  /* 通路矢印 */
-  svg+=`<line x1="${ox+bw-10}" y1="${aisleY+aisleH/2}" x2="${ox+20}" y2="${aisleY+aisleH/2}" stroke="rgba(148,163,184,0.3)" stroke-width="1" stroke-dasharray="6,4" marker-end="url(#arw${o.id})"/>`;
-
-  /* 地上駐車枠 */
-  if(pk.surfP>0){
-    const spY=aisleY+aisleH+2;
-    const spH=pD*sc*0.55;
-    const totalSpW=pk.surfP*pW*sc;
-    const spStartX=ox+bw-totalSpW;
-    for(let i=0;i<pk.surfP;i++){
-      const px=spStartX+i*pW*sc;
-      svg+=`<rect x="${px}" y="${spY}" width="${pW*sc-2}" height="${spH}" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.5)" stroke-width="1" rx="2"/>`;
-      svg+=`<text x="${px+pW*sc/2-1}" y="${spY+spH/2+3}" text-anchor="middle" fill="rgba(59,130,246,0.7)" font-size="9">P${pk.piloP+pk.garP+i+1}</text>`;
+    /* Aisle */
+    const aisleY=oy+pd.aisle.y*sc, aisleH=pd.aisle.h*sc;
+    svg+=`<rect x="${ox}" y="${aisleY}" width="${bw}" height="${aisleH}" fill="rgba(100,116,139,0.08)" stroke="rgba(100,116,139,0.3)" stroke-width="0.8" rx="2" stroke-dasharray="5,3"/>`;
+    svg+=`<text x="${ox+bw/2}" y="${aisleY+aisleH/2+4}" text-anchor="middle" fill="rgba(148,163,184,0.6)" font-size="9">${pd.aisle.label}</text>`;
+    svg+=`<line x1="${ox+bw-10}" y1="${aisleY+aisleH/2}" x2="${ox+20}" y2="${aisleY+aisleH/2}" stroke="rgba(148,163,184,0.3)" stroke-width="1" stroke-dasharray="6,4" marker-end="url(#${mkId})"/>`;
+    /* Surface parking */
+    if(pd.surfParking.count>0){
+      pd.surfParking.stalls.forEach(s=>{
+        const sx=ox+s.x*sc, sy=oy+s.y*sc, sw=s.w*sc, sh=s.h*sc;
+        svg+=`<rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.5)" stroke-width="1" rx="2"/>`;
+        svg+=`<text x="${sx+sw/2}" y="${sy+sh/2+3}" text-anchor="middle" fill="rgba(59,130,246,0.7)" font-size="9">${s.label}</text>`;
+      });
+      const lastS=pd.surfParking.stalls[pd.surfParking.stalls.length-1];
+      svg+=`<text x="${ox+bw/2}" y="${oy+(lastS.y+lastS.h)*sc+14}" text-anchor="middle" fill="rgba(59,130,246,0.8)" font-size="9" font-weight="500">${pd.surfParking.label}</text>`;
     }
-    svg+=`<text x="${spStartX+totalSpW/2}" y="${spY+spH+14}" text-anchor="middle" fill="rgba(59,130,246,0.8)" font-size="9" font-weight="500">平面駐車 ${pk.surfP}台 (2.5×5.0m)</text>`;
-  }
-
-  /* 回転半径アーク */
-  const rPx=tR*sc;
-  const turnCx=ox+bw;
-  const turnCy=aisleY;
-  svg+=`<path d="M${turnCx+14},${turnCy-rPx*0.35} A${rPx*0.45},${rPx*0.45} 0 0,0 ${turnCx-rPx*0.2},${turnCy+aisleH*0.4}" fill="none" stroke="rgba(239,68,68,0.55)" stroke-width="1.2" stroke-dasharray="4,2.5" marker-end="url(#arw${o.id})"/>`;
-  svg+=`<text x="${turnCx+16}" y="${turnCy-rPx*0.35-5}" fill="rgba(239,68,68,0.8)" font-size="9" font-weight="500">R=5.3m</text>`;
-
-  /* ガ 回転 */
-  const gTurnCy=gY+gH/2;
-  svg+=`<path d="M${turnCx+14},${gTurnCy-rPx*0.3} A${rPx*0.4},${rPx*0.4} 0 0,0 ${turnCx-3},${gTurnCy+rPx*0.1}" fill="none" stroke="rgba(239,68,68,0.45)" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arw${o.id})"/>`;
-  svg+=`<text x="${turnCx+16}" y="${gTurnCy-rPx*0.3-4}" fill="rgba(239,68,68,0.6)" font-size="8">R=5.3m</text>`;
-
-  /* 道路帯 */
-  const rdW=16;
-  const totalH=bh+aisleH+pD*sc*0.55+24;
-  svg+=`<rect x="${ox+bw}" y="${oy-6}" width="${rdW}" height="${totalH}" fill="rgba(100,116,139,0.12)" stroke="none"/>`;
-  svg+=`<text x="${ox+bw+rdW/2}" y="${oy+bh/2}" text-anchor="middle" fill="rgba(148,163,184,0.7)" font-size="12" font-weight="600" transform="rotate(90,${ox+bw+rdW/2},${oy+bh/2})">道 路（東側）</text>`;
-
-  /* 寸法線 */
-  svg+=`<line x1="${ox}" y1="${oy-10}" x2="${ox+bw}" y2="${oy-10}" stroke="var(--dim)" stroke-width="0.6"/>`;
-  svg+=`<text x="${ox+bw/2}" y="${oy-14}" text-anchor="middle" fill="var(--dim)" font-size="9" font-weight="500">${depth.toFixed(1)}m</text>`;
-  svg+=`<line x1="${ox-14}" y1="${oy}" x2="${ox-14}" y2="${oy+bh}" stroke="var(--dim)" stroke-width="0.6"/>`;
-  svg+=`<text x="${ox-18}" y="${oy+bh/2}" fill="var(--dim)" font-size="9" font-weight="500" transform="rotate(-90,${ox-18},${oy+bh/2})" text-anchor="middle">${bNS.toFixed(1)}m</text>`;
-
-  /* エントリ */
-  svg+=`<text x="${ox+bw+rdW+4}" y="${gTurnCy+4}" fill="rgba(34,197,94,0.9)" font-size="11" font-weight="600">🚗→G</text>`;
-  svg+=`<text x="${ox+bw+rdW+4}" y="${turnCy+aisleH/2+4}" fill="rgba(59,130,246,0.9)" font-size="11" font-weight="600">🚗→P</text>`;
-
-  /* N方位 */
-  svg+=`<text x="${W-18}" y="${18}" fill="var(--dim)" font-size="12" font-weight="600">N↑</text>`;
-
-  const div=document.createElement('div');div.className='site-plan';
-  div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${defs}${svg}</svg><div class="site-plan-label" style="color:${o.c.m};font-size:.9rem">${o.name} — 1F配置図</div><div class="site-plan-sub" style="font-size:.75rem">計${pk.piloP+pk.garP+pk.surfP}台: ピロティ${pk.piloP}台 + 屋内G${pk.garP}台 + 平面${pk.surfP}台</div>`;
-  el.appendChild(div);
+    /* Turning radius arc */
+    const rPx=pd.turnRadius*sc;
+    const turnCx=ox+bw, turnCy=aisleY;
+    svg+=`<path d="M${turnCx+14},${turnCy-rPx*0.35} A${rPx*0.45},${rPx*0.45} 0 0,0 ${turnCx-rPx*0.2},${turnCy+aisleH*0.4}" fill="none" stroke="rgba(239,68,68,0.55)" stroke-width="1.2" stroke-dasharray="4,2.5" marker-end="url(#${mkId})"/>`;
+    svg+=`<text x="${turnCx+16}" y="${turnCy-rPx*0.35-5}" fill="rgba(239,68,68,0.8)" font-size="9" font-weight="500">R=${pd.turnRadius}m</text>`;
+    /* Road */
+    const rdW=16, totalH=bh+aisleH+50;
+    svg+=`<rect x="${ox+bw}" y="${oy-6}" width="${rdW}" height="${totalH}" fill="rgba(100,116,139,0.12)"/>`;
+    svg+=`<text x="${ox+bw+rdW/2}" y="${oy+bh/2}" text-anchor="middle" fill="rgba(148,163,184,0.7)" font-size="12" font-weight="600" transform="rotate(90,${ox+bw+rdW/2},${oy+bh/2})">道 路（東側）</text>`;
+    /* Dimension lines */
+    svg+=`<line x1="${ox}" y1="${oy-10}" x2="${ox+bw}" y2="${oy-10}" stroke="var(--dim)" stroke-width="0.6"/>`;
+    svg+=`<text x="${ox+bw/2}" y="${oy-14}" text-anchor="middle" fill="var(--dim)" font-size="9" font-weight="500">${bEW.toFixed(1)}m</text>`;
+    svg+=`<line x1="${ox-14}" y1="${oy}" x2="${ox-14}" y2="${oy+bh}" stroke="var(--dim)" stroke-width="0.6"/>`;
+    svg+=`<text x="${ox-18}" y="${oy+bh/2}" fill="var(--dim)" font-size="9" font-weight="500" transform="rotate(-90,${ox-18},${oy+bh/2})" text-anchor="middle">${bNS.toFixed(1)}m</text>`;
+    /* N compass */
+    svg+=`<text x="${W-18}" y="18" fill="var(--dim)" font-size="12" font-weight="600">N↑</text>`;
+    const div=document.createElement('div');div.className='site-plan';
+    div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${defs}${svg}</svg><div class="site-plan-label" style="color:${c.m};font-size:.9rem">${opt.name} — 1F配置図</div><div class="site-plan-sub" style="font-size:.75rem">計${pd.totalParking}台: ${pd.piloti.label} + 屋内G1台 + ${pd.surfParking.label}</div>`;
+    el.appendChild(div);
+  });
 });
 }();
 
