@@ -459,24 +459,41 @@ footer{text-align:center;padding:48px 0;color:var(--dim);font-size:.75rem;border
 </div>
 
 <!-- Verdict -->
-<div class="verdict">
+<div class="verdict" id="clientProposal">
   <h3>💡 クライアントへのご提案</h3>
-  <p>
-    <strong>300%の容積率では、階数を増やしても延べ床面積は増えません。</strong>7Fにするとコア（EV・階段・廊下）が2層分増え、ネット面積は5Fより減少します。<br><br>
-    <span style="color:var(--a)">■</span> <strong>案A（5F・8室）</strong>= 全室40㎡超のゆとり。段差テラスの「泊まれる邸宅」 ／
-    <span style="color:var(--b)">■</span> <strong>案B（6F・10室）</strong>= 客室数と空間品質のバランス型 ／
-    <span style="color:var(--g)">■</span> <strong>案C（7F・13室）</strong>= 最多室数・2グレード混在で幅広い客層<br><br>
-    <strong>🅿️ 駐車計画:</strong> 全案 <strong>1F屋内7台確保</strong>（3.0m×6.0mモジュール）。ダブルロウ配置（東列4台＋西列3台、中央車路）で建物内に収容。EV・階段コアは全階同一位置で垂直貫通。<br><br>
-    <strong>🧭 方位戦略:</strong> 東面（道路側）= エントランス＆ドロップオフ ／ 西面（円山側）= ロビー＆テラスに展望 ／ 南面 = 客室主採光 ／ 北面 = コア＆サービス動線<br><br>
-    <strong>判断基準:</strong> 「街への開放性」と「建物の高さ」は容積率300%では<strong>トレードオフ</strong>です。どちらを優先するかがプロジェクトの方向性を決定します。
-  </p>
+  <div style="margin-top:12px">
+    <p style="margin-bottom:12px">
+      <strong>300%の容積率では、階数を増やしても延べ床面積は増えません。</strong>7Fにするとコア（EV・階段・廊下）が2層分増え、ネット面積は5Fより減少します。
+    </p>
+
+    <div style="border-left:3px solid var(--a);padding:8px 12px;margin:10px 0;border-radius:0 6px 6px 0;background:rgba(248,113,113,0.04)">
+      <strong style="color:var(--a)">案A（5F・8室）— 推奨「泊まれる邸宅」</strong><br>
+      <span style="font-size:.85rem;color:var(--dim)">全室40㎡超のゆとりある空間構成。1F全7台屋内駐車（ガレージ1台＋ピロティ6台、3×6mモジュール全数建物内収容）。5F建物高さ≒15mと低層で円山の景観に馴染む。2F吹抜イベントスペースは周辺との「開かれた接点」。ネット面積効率は最高（コア層数最少）。</span>
+    </div>
+
+    <div style="border-left:3px solid var(--b);padding:8px 12px;margin:10px 0;border-radius:0 6px 6px 0;background:rgba(52,211,153,0.04)">
+      <strong style="color:var(--b)">案B（6F・10室）— バランス型</strong><br>
+      <span style="font-size:.85rem;color:var(--dim)">客室数と空間品質の両立。1F屋内3台＋平面4台=全7台確保。客室フロアが4層あり、SD5室＋Suite1室の混合構成。オフィスは最上階に配置し眺望を活かす。建物高さ≒18mで中層。</span>
+    </div>
+
+    <div style="border-left:3px solid #c084fc;padding:8px 12px;margin:10px 0;border-radius:0 6px 6px 0;background:rgba(192,132,252,0.04)">
+      <strong style="color:#c084fc">案C（7F・13室）— 最多室数</strong><br>
+      <span style="font-size:.85rem;color:var(--dim)">最大客室数13室でCP(25㎡)とSD(40㎡)の2グレード混在、幅広い客層対応。1F駐車は全7台ピロティ。建物高さ≒21mで高層寄り、北側斜線への影響に注意。コア面積比率が最大のためネット効率は3案中最低。</span>
+    </div>
+
+    <p style="margin-top:12px">
+      <strong>🅿️ 駐車計画:</strong> 全案 <strong>1F 計7台確保</strong>（3.0m×6.0mモジュール固定）。案Aは全数ピロティ＋屋内ガレージ、案B/Cはピロティ＋平面の組合せ。<br>
+      <strong>🧭 ゾーニング:</strong> 東面＝エントランス＆道路接道 ／ 西面＝ロビー展望（円山側） ／ コアは全階同一位置で構造合理化。<br>
+      <strong>判断基準:</strong> 「街への開放性」と「建物の高さ」は容積率300%では<strong>トレードオフ</strong>です。
+    </p>
+  </div>
 </div>
 
 </div>
 
 <footer>
-  <p style="font-size:.85rem;font-weight:500;margin-bottom:4px">Sapporo Maruyama Hotel — Volume Study Dashboard v3</p>
-  <p>akimachome architects ／ 2026.03.22 ／ 全34条例反映・施行令2条準拠 ／ コスト: 松井建設(2025.10高岡)+北海道2025予測</p>
+  <p style="font-size:.85rem;font-weight:500;margin-bottom:4px">Sapporo Maruyama Hotel — Volume Study Dashboard v3 ／ <a href="https://akihamada.github.io/zoning-generator/" target="_blank" style="color:var(--a);text-decoration:underline">🏗️ インタラクティブ・ゾーニング・ジェネレーター →</a></p>
+  <p>akimachome architects ／ 2026.03.28 ／ 全34条例反映・施行令2条準拠 ／ コスト: 松井建設(2025.10高岡)+北海道2025予測</p>
 </footer>
 
 <script>
@@ -897,26 +914,21 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
     hdr.innerHTML=`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c.m}"></span><span style="font-size:.85rem;font-weight:700;color:${c.m}">${opt.name}</span><span style="font-size:.7rem;color:var(--dim);margin-left:auto">${opt.room_count}室 | ${ns.toFixed(1)}×${ew.toFixed(1)}m</span>`;
     el.appendChild(hdr);
 
-    const row=document.createElement('div');
-    row.className='site-plan-row';
-    row.style.cssText=`background:${c.bg};border-radius:8px;padding:8px;margin:4px 0 8px`;
-    el.appendChild(row);
-
     opt.floors.forEach(fl=>{
-      const W=280,H=400,m=34;
+      const W=520,H=680,m=50;
       const siteNs=opt.sitePlan?opt.sitePlan.site.eLen:ns*1.2;
       const scX=(W-m*2)/ew, scY=(H-m*2)/siteNs;
       const ox=m,oy=m;
       const bw=ew*scX, bh=ns*scY;
       let svg='';
       /* Road indicator on EAST side = RIGHT */
-      const roadW=14;
-      svg+=`<rect x="${ox+bw+2}" y="${oy-4}" width="${roadW}" height="${bh+8}" fill="rgba(100,100,100,0.1)" stroke="rgba(200,200,200,0.15)" stroke-width="0.5" rx="2"/>`;
-      svg+=`<text x="${ox+bw+2+roadW/2}" y="${oy+bh/2}" text-anchor="middle" fill="rgba(251,191,36,0.55)" font-size="4.5" font-weight="600" transform="rotate(90,${ox+bw+2+roadW/2},${oy+bh/2})">🛣️ 市道（東）</text>`;
+      const roadW=22;
+      svg+=`<rect x="${ox+bw+4}" y="${oy-6}" width="${roadW}" height="${bh+12}" fill="rgba(100,100,100,0.1)" stroke="rgba(200,200,200,0.15)" stroke-width="0.5" rx="3"/>`;
+      svg+=`<text x="${ox+bw+4+roadW/2}" y="${oy+bh/2}" text-anchor="middle" fill="rgba(251,191,36,0.55)" font-size="7" font-weight="600" transform="rotate(90,${ox+bw+4+roadW/2},${oy+bh/2})">🛣️ 市道（東）</text>`;
       /* West label on LEFT */
-      svg+=`<text x="${ox-8}" y="${oy+bh/2}" text-anchor="middle" fill="rgba(34,197,94,0.35)" font-size="4" transform="rotate(-90,${ox-8},${oy+bh/2})">西（円山・山側）</text>`;
+      svg+=`<text x="${ox-14}" y="${oy+bh/2}" text-anchor="middle" fill="rgba(34,197,94,0.35)" font-size="6" transform="rotate(-90,${ox-14},${oy+bh/2})">西（円山・山側）</text>`;
       /* Building outline */
-      svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="rgba(30,41,59,0.25)" stroke="${c.m}" stroke-width="1.5" rx="2"/>`;
+      svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="rgba(30,41,59,0.25)" stroke="${c.m}" stroke-width="2" rx="3"/>`;
       /* Render elements — swap x↔y, flip EW so east=right */
       fl.elements.forEach(e=>{
         const ex=ox+(ew-e.y-e.h)*scX;
@@ -925,35 +937,41 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
         const fill=e.fill||'rgba(100,116,139,0.1)';
         const stroke=e.stroke||'rgba(100,116,139,0.2)';
         const isDash=e.type==='corridor'||e.type==='void'||e.type==='terrace'||e.type==='driveway';
-        svg+=`<rect x="${ex}" y="${ey}" width="${ew2}" height="${eh}" fill="${fill}" stroke="${stroke}" stroke-width="${e.type==='core'?0.8:e.type==='driveway'?0.8:0.5}" rx="${e.type==='core'?2:1}" ${isDash?'stroke-dasharray="3,2"':''}/>`;
-        /* Label */
-        const fz=e.type==='room'?5:e.type==='ev'||e.type==='stair'||e.type==='ps'?4:e.type==='lobby'||e.type==='event'||e.type==='office'?6:e.type==='driveway'?4:4.2;
+        svg+=`<rect x="${ex}" y="${ey}" width="${ew2}" height="${eh}" fill="${fill}" stroke="${stroke}" stroke-width="${e.type==='core'?1.2:e.type==='driveway'?1:0.8}" rx="${e.type==='core'?3:2}" ${isDash?'stroke-dasharray="5,3"':''}/>`;
+        /* Label — larger font for bigger SVG */
+        const fz=e.type==='room'?9:e.type==='ev'||e.type==='stair'||e.type==='ps'?7:e.type==='lobby'||e.type==='event'||e.type==='office'?11:e.type==='driveway'?7:7;
         const fw=e.label.includes('Suite')||e.type==='lobby'||e.type==='office'||e.type==='event'?600:500;
         const tc=e.type==='room'?(e.label.includes('Suite')?'rgba(180,83,9,0.75)':e.label.includes('CP')?'rgba(139,92,246,0.6)':'rgba(59,130,246,0.6)'):e.type==='lobby'||e.type==='entrance'?'rgba(249,115,22,0.55)':e.type==='event'?'rgba(34,197,94,0.65)':e.type==='office'?'rgba(59,130,246,0.6)':e.type==='terrace'?'rgba(34,197,94,0.45)':e.type==='driveway'?'rgba(251,191,36,0.5)':'rgba(148,163,184,0.6)';
-        if(ew2>8&&eh>6) svg+=`<text x="${ex+ew2/2}" y="${ey+eh/2+fz*0.3}" text-anchor="middle" fill="${tc}" font-size="${fz}" font-weight="${fw}">${e.label}</text>`;
+        if(ew2>12&&eh>10) svg+=`<text x="${ex+ew2/2}" y="${ey+eh/2+fz*0.3}" text-anchor="middle" fill="${tc}" font-size="${fz}" font-weight="${fw}">${e.label}</text>`;
       });
       /* Dimensions */
-      svg+=`<text x="${ox+bw/2}" y="${oy-5}" text-anchor="middle" fill="var(--dim)" font-size="5">${ew}m (EW)</text>`;
-      svg+=`<text x="${ox+bw+20}" y="${oy+bh/2}" fill="var(--dim)" font-size="5" transform="rotate(90,${ox+bw+20},${oy+bh/2})" text-anchor="middle">${ns.toFixed(1)}m</text>`;
+      svg+=`<text x="${ox+bw/2}" y="${oy-8}" text-anchor="middle" fill="var(--dim)" font-size="9">${ew}m (EW)</text>`;
+      svg+=`<text x="${ox+bw+32}" y="${oy+bh/2}" fill="var(--dim)" font-size="9" transform="rotate(90,${ox+bw+32},${oy+bh/2})" text-anchor="middle">${ns.toFixed(1)}m (NS)</text>`;
       /* N compass at top-left */
-      svg+=`<text x="8" y="14" fill="var(--dim)" font-size="8" font-weight="600">N↑</text>`;
+      svg+=`<text x="12" y="22" fill="var(--dim)" font-size="13" font-weight="700">N↑</text>`;
       /* Labels: E on right, W on left */
-      svg+=`<text x="${ox+bw+3}" y="${oy-6}" fill="rgba(251,191,36,0.4)" font-size="4.5" font-weight="600">E</text>`;
-      svg+=`<text x="${ox-6}" y="${oy-6}" fill="rgba(34,197,94,0.4)" font-size="4.5" font-weight="600">W</text>`;
+      svg+=`<text x="${ox+bw+5}" y="${oy-10}" fill="rgba(251,191,36,0.4)" font-size="8" font-weight="700">E</text>`;
+      svg+=`<text x="${ox-10}" y="${oy-10}" fill="rgba(34,197,94,0.4)" font-size="8" font-weight="700">W</text>`;
       /* Validation */
       const v=fl.validation;
       if(v.roomCount){
-        svg+=`<text x="${ox+bw/2}" y="${oy+bh+8}" text-anchor="middle" fill="rgba(239,68,68,0.5)" font-size="5">歩行距離 ${v.maxWalkM}m ≤50m ${v.walkOk?'✓':'✗'} | ${v.roomCount}室 ${v.totalRoomArea}㎡</text>`;
-        svg+=`<text x="${ox+4}" y="${oy+bh+16}" fill="rgba(59,130,246,0.3)" font-size="4">Shapely検証: 包含${v.allContained?'✓':'✗'} 重なり${v.noOverlap?'✓':'✗'}</text>`;
+        svg+=`<text x="${ox+bw/2}" y="${oy+bh+14}" text-anchor="middle" fill="rgba(239,68,68,0.6)" font-size="8">歩行距離 ${v.maxWalkM}m ≤50m ${v.walkOk?'✓':'✗'} | ${v.roomCount}室 ${v.totalRoomArea}㎡</text>`;
+        svg+=`<text x="${ox+6}" y="${oy+bh+26}" fill="rgba(59,130,246,0.35)" font-size="7">Shapely検証: 包含${v.allContained?'✓':'✗'} 重なり${v.noOverlap?'✓':'✗'}</text>`;
       } else {
         const seq=fl.use.includes('ロビー')?'道路(東)→エントランス→ロビー→EV↑':fl.use.includes('イベント')?'EV→EVホール→イベントスペース':'EV→オフィス(隣接)→テラス(奥)';
-        svg+=`<text x="${ox+4}" y="${oy+bh+8}" fill="rgba(148,163,184,0.3)" font-size="4">動線: ${seq}</text>`;
+        svg+=`<text x="${ox+6}" y="${oy+bh+14}" fill="rgba(148,163,184,0.35)" font-size="7">動線: ${seq}</text>`;
       }
-      const div=document.createElement('div');div.className='site-plan';
-      div.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${svg}</svg><div class="site-plan-label" style="color:${c.m};font-size:.78rem">${opt.name.split(' ')[0]} ${fl.name}</div><div class="site-plan-sub">${fl.use}</div>`;
-      row.appendChild(div);
-
+      /* Each floor gets its own full-width card */
+      const card=document.createElement('div');
+      card.style.cssText='width:100%;max-width:560px;margin:8px auto;padding:12px;border-radius:10px;background:rgba(30,41,59,0.3);border:1px solid rgba(148,163,184,0.08)';
+      card.innerHTML=`<div style="text-align:center;margin-bottom:6px"><span style="color:${c.m};font-weight:700;font-size:1rem">${opt.name.split(' ')[0]} ${fl.name}</span><span style="color:var(--dim);font-size:.8rem;margin-left:8px">${fl.use}</span></div><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${svg}</svg>`;
+      el.appendChild(card);
     });
+
+    /* Spacer between options */
+    const spacer=document.createElement('div');
+    spacer.style.cssText='width:100%;height:2px;margin:24px 0;background:linear-gradient(90deg,transparent,rgba(148,163,184,0.15),transparent)';
+    el.appendChild(spacer);
   });
 }).catch(e=>{el.innerHTML='<p style="color:#ef4444">zoning_data.json の読み込みに失敗: '+e.message+'</p>';});
 }();
