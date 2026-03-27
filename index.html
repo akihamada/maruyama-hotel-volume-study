@@ -902,38 +902,43 @@ fetch('zoning_data.json').then(r=>r.json()).then(data=>{
     el.appendChild(row);
 
     opt.floors.forEach(fl=>{
-      const W=280,H=360,m=34;
-      const scX=(W-m*2)/ew, scY=(H-m*2)/ns;
+      const W=280,H=400,m=34;
+      const siteNs=opt.sitePlan?opt.sitePlan.site.eLen:ns*1.2;
+      const scX=(W-m*2)/ew, scY=(H-m*2)/siteNs;
       const ox=m,oy=m;
       const bw=ew*scX, bh=ns*scY;
       let svg='';
-      /* Road indicator on east side (top of SVG) */
-      svg+=`<rect x="${ox-4}" y="${oy-18}" width="${bw+8}" height="14" fill="rgba(100,100,100,0.1)" stroke="rgba(200,200,200,0.15)" stroke-width="0.5" rx="2"/>`;
-      svg+=`<text x="${ox+bw/2}" y="${oy-8}" text-anchor="middle" fill="rgba(251,191,36,0.6)" font-size="5" font-weight="600">🛣️ 市道（東）</text>`;
-      /* W label on west side (bottom of SVG) */
-      svg+=`<text x="${ox+bw/2}" y="${oy+bh+22}" text-anchor="middle" fill="rgba(34,197,94,0.4)" font-size="4.5">← 西（円山・山側）→</text>`;
+      /* Road indicator on EAST side = RIGHT */
+      const roadW=14;
+      svg+=`<rect x="${ox+bw+2}" y="${oy-4}" width="${roadW}" height="${bh+8}" fill="rgba(100,100,100,0.1)" stroke="rgba(200,200,200,0.15)" stroke-width="0.5" rx="2"/>`;
+      svg+=`<text x="${ox+bw+2+roadW/2}" y="${oy+bh/2}" text-anchor="middle" fill="rgba(251,191,36,0.55)" font-size="4.5" font-weight="600" transform="rotate(90,${ox+bw+2+roadW/2},${oy+bh/2})">🛣️ 市道（東）</text>`;
+      /* West label on LEFT */
+      svg+=`<text x="${ox-8}" y="${oy+bh/2}" text-anchor="middle" fill="rgba(34,197,94,0.35)" font-size="4" transform="rotate(-90,${ox-8},${oy+bh/2})">西（円山・山側）</text>`;
       /* Building outline */
       svg+=`<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" fill="rgba(30,41,59,0.25)" stroke="${c.m}" stroke-width="1.5" rx="2"/>`;
-      /* Render elements from JSON — swap x↔y, w↔h for NS-vertical orientation */
+      /* Render elements — swap x↔y, flip EW so east=right */
       fl.elements.forEach(e=>{
-        const ex=ox+e.y*scX, ey=oy+e.x*scY;
+        const ex=ox+(ew-e.y-e.h)*scX;
+        const ey=oy+e.x*scY;
         const ew2=e.h*scX, eh=e.w*scY;
         const fill=e.fill||'rgba(100,116,139,0.1)';
         const stroke=e.stroke||'rgba(100,116,139,0.2)';
-        const isDash=e.type==='corridor'||e.type==='void'||e.type==='terrace';
-        svg+=`<rect x="${ex}" y="${ey}" width="${ew2}" height="${eh}" fill="${fill}" stroke="${stroke}" stroke-width="${e.type==='core'?0.8:0.5}" rx="${e.type==='core'?2:1}" ${isDash?'stroke-dasharray="3,2"':''}/>`;
+        const isDash=e.type==='corridor'||e.type==='void'||e.type==='terrace'||e.type==='driveway';
+        svg+=`<rect x="${ex}" y="${ey}" width="${ew2}" height="${eh}" fill="${fill}" stroke="${stroke}" stroke-width="${e.type==='core'?0.8:e.type==='driveway'?0.8:0.5}" rx="${e.type==='core'?2:1}" ${isDash?'stroke-dasharray="3,2"':''}/>`;
         /* Label */
-        const fz=e.type==='room'?5:e.type==='ev'||e.type==='stair'||e.type==='ps'?4:e.type==='lobby'||e.type==='event'||e.type==='office'?6:4.2;
+        const fz=e.type==='room'?5:e.type==='ev'||e.type==='stair'||e.type==='ps'?4:e.type==='lobby'||e.type==='event'||e.type==='office'?6:e.type==='driveway'?4:4.2;
         const fw=e.label.includes('Suite')||e.type==='lobby'||e.type==='office'||e.type==='event'?600:500;
-        const tc=e.type==='room'?(e.label.includes('Suite')?'rgba(180,83,9,0.75)':e.label.includes('CP')?'rgba(139,92,246,0.6)':'rgba(59,130,246,0.6)'):e.type==='lobby'||e.type==='entrance'?'rgba(249,115,22,0.55)':e.type==='event'?'rgba(34,197,94,0.65)':e.type==='office'?'rgba(59,130,246,0.6)':e.type==='terrace'?'rgba(34,197,94,0.45)':'rgba(148,163,184,0.6)';
+        const tc=e.type==='room'?(e.label.includes('Suite')?'rgba(180,83,9,0.75)':e.label.includes('CP')?'rgba(139,92,246,0.6)':'rgba(59,130,246,0.6)'):e.type==='lobby'||e.type==='entrance'?'rgba(249,115,22,0.55)':e.type==='event'?'rgba(34,197,94,0.65)':e.type==='office'?'rgba(59,130,246,0.6)':e.type==='terrace'?'rgba(34,197,94,0.45)':e.type==='driveway'?'rgba(251,191,36,0.5)':'rgba(148,163,184,0.6)';
         if(ew2>8&&eh>6) svg+=`<text x="${ex+ew2/2}" y="${ey+eh/2+fz*0.3}" text-anchor="middle" fill="${tc}" font-size="${fz}" font-weight="${fw}">${e.label}</text>`;
       });
       /* Dimensions */
-      svg+=`<line x1="${ox}" y1="${oy-2}" x2="${ox+bw}" y2="${oy-2}" stroke="var(--dim)" stroke-width="0.3"/>`;
-      svg+=`<text x="${ox+bw/2}" y="${oy-22}" text-anchor="middle" fill="var(--dim)" font-size="5">${ew}m</text>`;
-      svg+=`<text x="${ox-4}" y="${oy+bh/2}" fill="var(--dim)" font-size="5" transform="rotate(-90,${ox-4},${oy+bh/2})" text-anchor="middle">${ns.toFixed(1)}m</text>`;
-      /* N compass */
-      svg+=`<text x="${W-12}" y="14" fill="var(--dim)" font-size="8" font-weight="600">N↑</text>`;
+      svg+=`<text x="${ox+bw/2}" y="${oy-5}" text-anchor="middle" fill="var(--dim)" font-size="5">${ew}m (EW)</text>`;
+      svg+=`<text x="${ox+bw+20}" y="${oy+bh/2}" fill="var(--dim)" font-size="5" transform="rotate(90,${ox+bw+20},${oy+bh/2})" text-anchor="middle">${ns.toFixed(1)}m</text>`;
+      /* N compass at top-left */
+      svg+=`<text x="8" y="14" fill="var(--dim)" font-size="8" font-weight="600">N↑</text>`;
+      /* Labels: E on right, W on left */
+      svg+=`<text x="${ox+bw+3}" y="${oy-6}" fill="rgba(251,191,36,0.4)" font-size="4.5" font-weight="600">E</text>`;
+      svg+=`<text x="${ox-6}" y="${oy-6}" fill="rgba(34,197,94,0.4)" font-size="4.5" font-weight="600">W</text>`;
       /* Validation */
       const v=fl.validation;
       if(v.roomCount){
